@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia.Data;
 
 #nullable enable
@@ -12,7 +13,7 @@ namespace Avalonia.PropertyStore
         private int _applyingStyles;
         private readonly List<IValueFrame> _frames = new List<IValueFrame>();
         private LocalValueFrame? _localValues;
-        private Dictionary<int, int>? _effectiveValues;
+        private Dictionary<int, IValue>? _effectiveValues;
 
         public ValueStore(AvaloniaObject owner) => _owner = owner;
 
@@ -69,8 +70,8 @@ namespace Avalonia.PropertyStore
         public bool TryGetValue<T>(StyledPropertyBase<T> property, out T? result)
         {
             if (_effectiveValues is object &&
-                _effectiveValues.TryGetValue(property.Id, out var index) &&
-                _frames[index].TryGetValue(property, out result))
+                _effectiveValues.TryGetValue(property.Id, out var value) &&
+                ((IValue<T>)value).TryGetValue(out result))
             {
                 return true;
             }
@@ -120,11 +121,11 @@ namespace Avalonia.PropertyStore
             T? newValue = property.GetDefaultValue(_owner.GetType());
             var oldValue = TryGetValue(property, out var v) ? v : newValue;
 
-            if (ReevaluateEffectiveValue(property, out var value, out var frameIndex, out var priority))
+            if (ReevaluateEffectiveValue(property, out var value, out var priority))
             {
-                _effectiveValues ??= new Dictionary<int, int>();
-                _effectiveValues[property.Id] = frameIndex;
-                newValue = value;
+                _effectiveValues ??= new Dictionary<int, IValue>();
+                _effectiveValues[property.Id] = value;
+                ((IValue<T>)value).TryGetValue(out newValue);
             }
             else if (_effectiveValues is object)
             {
@@ -139,8 +140,7 @@ namespace Avalonia.PropertyStore
 
         private bool ReevaluateEffectiveValue<T>(
             StyledPropertyBase<T> property,
-            out T? result,
-            out int frameIndex,
+            [NotNullWhen(true)] out IValue? result,
             out BindingPriority priority)
         {
             for (var i = _frames.Count - 1; i >= 0; --i)
@@ -158,38 +158,21 @@ namespace Avalonia.PropertyStore
 
                     if (value.Property == property)
                     {
-                        frameIndex = i;
-
-                        if (value is IValue<T> typedValue)
-                        {
-                            if (typedValue.TryGetValue(out result))
-                            {
-                                priority = frame.Priority;
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            if (value.TryGetValue(out var untypedValue))
-                            {
-                                result = (T)untypedValue!;
-                                priority = frame.Priority;
-                                return true;
-                            }
-                        }
+                        priority = frame.Priority;
+                        result = value;
+                        return true;
                     }
                 }
             }
 
             result = default;
-            frameIndex = -1;
             priority = BindingPriority.Unset;
             return false;
         }
 
         private void ReevaluateEffectiveValues()
         {
-            var newValues = new Dictionary<int, int>();
+            var newValues = new Dictionary<int, IValue>();
 
             for (var i = _frames.Count - 1; i >= 0; --i)
             {
@@ -207,7 +190,7 @@ namespace Avalonia.PropertyStore
                     if (!newValues.ContainsKey(value.Property.Id) &&
                         value.TryGetValue(out var v))
                     {
-                        newValues.Add(value.Property.Id, i);
+                        newValues.Add(value.Property.Id, value);
                     }
                 }
             }
