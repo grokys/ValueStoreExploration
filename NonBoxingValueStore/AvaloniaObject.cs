@@ -60,13 +60,18 @@ namespace Avalonia
             _values.SetLocalValue(property, value);
         }
 
+        protected void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> e)
+        {
+            PropertyChanged?.Invoke(this, e);
+        }
+
         internal void RaisePropertyChanged<T>(
             AvaloniaProperty<T> property,
             Optional<T> oldValue,
             BindingValue<T> newValue,
             BindingPriority priority = BindingPriority.LocalValue)
         {
-            PropertyChanged?.Invoke(this, new AvaloniaPropertyChangedEventArgs<T>(
+            OnPropertyChanged(new AvaloniaPropertyChangedEventArgs<T>(
                 this,
                 property,
                 oldValue,

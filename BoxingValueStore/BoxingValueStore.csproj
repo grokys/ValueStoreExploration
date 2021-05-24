@@ -1,13 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Avalonia</RootNamespace>
 	<Nullable>enable</Nullable>
+	<ApplicationIcon />
+	<OutputType>Exe</OutputType>
+	<StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\NonBoxingValueStore\Benchmarks\SetGetValueBenchmarks.cs" Link="Benchmarks\SetGetValueBenchmarks.cs" />
+    <Compile Include="..\NonBoxingValueStore\Tests\AvaloniaObjectTests_GetValue.cs" Link="Tests\AvaloniaObjectTests_GetValue.cs" />
+    <Compile Include="..\NonBoxingValueStore\Tests\AvaloniaObjectTests_SetValue.cs" Link="Tests\AvaloniaObjectTests_SetValue.cs" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Avalonia.Base\Avalonia.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Benchmarks\" />
+    <Folder Include="Tests\" />
   </ItemGroup>
 
 </Project>

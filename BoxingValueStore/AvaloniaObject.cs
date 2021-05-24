@@ -1,10 +1,20 @@
 ﻿using System;
 using Avalonia.Data;
+using Avalonia.PropertyStore;
 
 namespace Avalonia
 {
     public class AvaloniaObject : IAvaloniaObject
     {
+        private readonly ValueStore _values;
+
+        public AvaloniaObject()
+        {
+            _values = new ValueStore(this);
+        }
+
+        public event EventHandler<AvaloniaPropertyChangedEventArgs>? PropertyChanged;
+
         public void AddInheritanceChild(IAvaloniaObject child)
         {
             throw new NotImplementedException();
@@ -27,7 +37,7 @@ namespace Avalonia
 
         public T? GetValue<T>(StyledPropertyBase<T> property)
         {
-            throw new NotImplementedException();
+            return (T?)_values.GetValue(property);
         }
 
         public bool IsAnimating(AvaloniaProperty property)
@@ -47,12 +57,26 @@ namespace Avalonia
 
         public void SetValue<T>(StyledPropertyBase<T> property, T value)
         {
-            throw new NotImplementedException();
+            _values.SetLocalValue(property, value);
         }
 
-        internal void RaisePropertyChanged()
+        protected void OnPropertyChanged(AvaloniaPropertyChangedEventArgs e)
         {
+            PropertyChanged?.Invoke(this, e);
+        }
 
+        internal void RaisePropertyChanged(
+            AvaloniaProperty property,
+            object? oldValue,
+            object? newValue,
+            BindingPriority priority = BindingPriority.LocalValue)
+        {
+            OnPropertyChanged(new AvaloniaPropertyChangedEventArgs(
+                this,
+                property,
+                oldValue,
+                newValue,
+                priority));
         }
     }
 }
