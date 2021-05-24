@@ -50,6 +50,7 @@ namespace Avalonia.PropertyStore
             if (!EqualityComparer<T>.Default.Equals(_value, value))
             {
                 _value = value;
+                _hasValue = true;
                 _owner.LocalValueChanged(Property);
             }
         }
