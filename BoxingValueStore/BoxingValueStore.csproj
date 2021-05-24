@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\NonBoxingValueStore\Benchmarks\SetGetValueBenchmarks.cs" Link="Benchmarks\SetGetValueBenchmarks.cs" />
+    <Compile Include="..\NonBoxingValueStore\Benchmarks\GetSetValueBenchmarks.cs" Link="Benchmarks\GetSetValueBenchmarks.cs" />
     <Compile Include="..\NonBoxingValueStore\Tests\AvaloniaObjectTests_GetValue.cs" Link="Tests\AvaloniaObjectTests_GetValue.cs" />
     <Compile Include="..\NonBoxingValueStore\Tests\AvaloniaObjectTests_SetValue.cs" Link="Tests\AvaloniaObjectTests_SetValue.cs" />
   </ItemGroup>
