@@ -20,9 +20,12 @@ namespace Avalonia
             throw new NotImplementedException();
         }
 
-        public IDisposable Bind<T>(StyledPropertyBase<T> property, IObservable<BindingValue<T>> source, BindingPriority priority = BindingPriority.LocalValue)
+        public IDisposable Bind<T>(
+            StyledPropertyBase<T> property,
+            IObservable<BindingValue<T>> source,
+            BindingPriority priority = BindingPriority.LocalValue)
         {
-            throw new NotImplementedException();
+            return _values.AddBinding(property, source, priority);
         }
 
         public void ClearValue<T>(StyledPropertyBase<T> property) => _values.ClearLocalValue(property);

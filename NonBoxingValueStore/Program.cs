@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using Avalonia.Benchmarks.AvaloniaObjectBenchmarks;
+using BenchmarkDotNet.Running;
 
 namespace Avalonia
 {

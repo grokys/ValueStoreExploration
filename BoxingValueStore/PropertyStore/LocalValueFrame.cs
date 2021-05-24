@@ -14,14 +14,17 @@ namespace Avalonia.PropertyStore
         public BindingPriority Priority => BindingPriority.LocalValue;
         public IList<IValue> Values => _entries.Values;
 
-        public IDisposable AddBinding<T>(ValueStore owner, StyledPropertyBase<T> property, IObservable<object?> source)
+        public IDisposable AddBinding<T>(
+            ValueStore owner,
+            StyledPropertyBase<T> property,
+            IObservable<BindingValue<T>> source)
         {
             if (_entries.TryGetValue(property.Id, out var entry))
             {
-                return ((LocalValueEntry)entry).AddBinding(source);
+                return ((LocalValueEntry<T>)entry).AddBinding(source);
             }
 
-            var e = new LocalValueEntry(owner, property);
+            var e = new LocalValueEntry<T>(owner, property);
             _entries.Add(property.Id, e);
             return e.AddBinding(source);
         }
@@ -35,11 +38,11 @@ namespace Avalonia.PropertyStore
         {
             if (_entries.TryGetValue(property.Id, out var entry))
             {
-                ((LocalValueEntry)entry).SetValue(value);
+                ((LocalValueEntry<T>)entry).SetValue(value);
                 return;
             }
 
-            var e = new LocalValueEntry(owner, property);
+            var e = new LocalValueEntry<T>(owner, property);
             _entries.Add(property.Id, e);
             e.SetValue(value);
         }

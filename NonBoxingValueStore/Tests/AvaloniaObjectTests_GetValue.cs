@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Subjects;
 using Avalonia.Data;
 using Xunit;
 
@@ -33,16 +34,16 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("newvalue", target.GetValue(property));
         }
 
-        ////[Fact]
-        ////public void GetValue_Returns_Bound_Value()
-        ////{
-        ////    var target = new Class1();
-        ////    var property = Class1.FooProperty;
+        [Fact]
+        public void GetValue_Returns_Bound_Value()
+        {
+            var target = new Class1();
+            var property = Class1.FooProperty;
 
-        ////    target.Bind(property, new BehaviorSubject<string>("newvalue"));
+            target.Bind(property, new BehaviorSubject<BindingValue<string>>("newvalue"));
 
-        ////    Assert.Equal("newvalue", target.GetValue(property));
-        ////}
+            Assert.Equal("newvalue", target.GetValue(property));
+        }
 
         ////[Fact]
         ////public void GetValue_Returns_Inherited_Value()

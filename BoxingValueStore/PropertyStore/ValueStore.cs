@@ -40,7 +40,7 @@ namespace Avalonia.PropertyStore
 
         public IDisposable AddBinding<T>(
             StyledPropertyBase<T> property,
-            IObservable<object?> source,
+            IObservable<BindingValue<T>> source,
             BindingPriority priority)
         {
             if (_localValues is null)
