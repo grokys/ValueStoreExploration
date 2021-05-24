@@ -10,9 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\NonBoxingValueStore\Benchmarks\GetSetValueBenchmarks.cs" Link="Benchmarks\GetSetValueBenchmarks.cs" />
-    <Compile Include="..\NonBoxingValueStore\Tests\AvaloniaObjectTests_GetValue.cs" Link="Tests\AvaloniaObjectTests_GetValue.cs" />
-    <Compile Include="..\NonBoxingValueStore\Tests\AvaloniaObjectTests_SetValue.cs" Link="Tests\AvaloniaObjectTests_SetValue.cs" />
+    <Compile Include="..\NonBoxingValueStore\Benchmarks\**\*.cs">
+	  <Link>Benchmarks\%(RecursiveDir)%(Filename)%(Extension)</Link>
+	</Compile>
+	  <Compile Include="..\NonBoxingValueStore\Tests\**\*.cs">
+		  <Link>Tests\%(RecursiveDir)%(Filename)%(Extension)</Link>
+	  </Compile>
   </ItemGroup>
 	
   <ItemGroup>
@@ -26,11 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Base\Avalonia.Base.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Benchmarks\" />
-    <Folder Include="Tests\" />
   </ItemGroup>
 
 </Project>
