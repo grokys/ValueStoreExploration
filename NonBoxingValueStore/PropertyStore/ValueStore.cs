@@ -12,7 +12,7 @@ namespace Avalonia.PropertyStore
         private int _applyingStyles;
         private readonly List<IValueFrame> _frames = new List<IValueFrame>();
         private LocalValueFrame? _localValues;
-        private Dictionary<int, object?>? _effectiveValues;
+        private Dictionary<int, int>? _effectiveValues;
 
         public ValueStore(AvaloniaObject owner) => _owner = owner;
 
@@ -68,9 +68,10 @@ namespace Avalonia.PropertyStore
 
         public bool TryGetValue<T>(StyledPropertyBase<T> property, out T? result)
         {
-            if (_effectiveValues is object && _effectiveValues.TryGetValue(property.Id, out var value))
+            if (_effectiveValues is object &&
+                _effectiveValues.TryGetValue(property.Id, out var index) &&
+                _frames[index].TryGetValue(property, out result))
             {
-                result = (T?)value;
                 return true;
             }
 
@@ -119,10 +120,10 @@ namespace Avalonia.PropertyStore
             T? newValue = property.GetDefaultValue(_owner.GetType());
             var oldValue = TryGetValue(property, out var v) ? v : newValue;
 
-            if (ReevaluateEffectiveValue(property, out var value, out var priority))
+            if (ReevaluateEffectiveValue(property, out var value, out var frameIndex, out var priority))
             {
-                _effectiveValues ??= new Dictionary<int, object?>();
-                _effectiveValues[property.Id] = value;
+                _effectiveValues ??= new Dictionary<int, int>();
+                _effectiveValues[property.Id] = frameIndex;
                 newValue = value;
             }
             else if (_effectiveValues is object)
@@ -139,6 +140,7 @@ namespace Avalonia.PropertyStore
         private bool ReevaluateEffectiveValue<T>(
             StyledPropertyBase<T> property,
             out T? result,
+            out int frameIndex,
             out BindingPriority priority)
         {
             for (var i = _frames.Count - 1; i >= 0; --i)
@@ -156,6 +158,8 @@ namespace Avalonia.PropertyStore
 
                     if (value.Property == property)
                     {
+                        frameIndex = i;
+
                         if (value is IValue<T> typedValue)
                         {
                             if (typedValue.TryGetValue(out result))
@@ -178,13 +182,14 @@ namespace Avalonia.PropertyStore
             }
 
             result = default;
+            frameIndex = -1;
             priority = BindingPriority.Unset;
             return false;
         }
 
         private void ReevaluateEffectiveValues()
         {
-            var newValues = new Dictionary<int, object?>();
+            var newValues = new Dictionary<int, int>();
 
             for (var i = _frames.Count - 1; i >= 0; --i)
             {
@@ -202,7 +207,7 @@ namespace Avalonia.PropertyStore
                     if (!newValues.ContainsKey(value.Property.Id) &&
                         value.TryGetValue(out var v))
                     {
-                        newValues.Add(value.Property.Id, v);
+                        newValues.Add(value.Property.Id, i);
                     }
                 }
             }

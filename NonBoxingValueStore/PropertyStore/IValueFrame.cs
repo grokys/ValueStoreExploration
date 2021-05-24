@@ -31,6 +31,6 @@ namespace Avalonia.PropertyStore
         /// </summary>
         IList<IValue> Values { get; }
 
-        bool TryGetValue<T>(AvaloniaProperty property, out IValue? value);
+        bool TryGetValue<T>(AvaloniaProperty property, out T? value);
     }
 }

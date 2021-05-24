@@ -39,9 +39,12 @@ namespace Avalonia.PropertyStore
             e.SetValue(value);
         }
 
-        public bool TryGetValue<T>(AvaloniaProperty property, out IValue? value)
+        public bool TryGetValue<T>(AvaloniaProperty property, out T? value)
         {
-            return _entries.TryGetValue(property.Id, out value);
+            if (_entries.TryGetValue(property.Id, out var v) && ((IValue<T>)v).TryGetValue(out value))
+                return true;
+            value = default;
+            return false;
         }
     }
 }
