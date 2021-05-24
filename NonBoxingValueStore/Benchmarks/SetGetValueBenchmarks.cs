@@ -6,18 +6,22 @@ namespace Avalonia.Benchmarks
     public class SetGetValueBenchmarks
     {
         [Benchmark]
-        public void SetGetValues()
+        public void SetValues()
         {
             var target = new TestClass();
-            target.SetValue(TestClass.StringProperty, "foo");
-            target.SetValue(TestClass.Struct1Property, new Struct1());
-            target.SetValue(TestClass.Struct2Property, new Struct2());
-            target.SetValue(TestClass.Struct3Property, new Struct3());
-            target.SetValue(TestClass.Struct4Property, new Struct4());
-            target.SetValue(TestClass.Struct5Property, new Struct5());
-            target.SetValue(TestClass.Struct6Property, new Struct6());
-            target.SetValue(TestClass.Struct7Property, new Struct7());
-            target.SetValue(TestClass.Struct8Property, new Struct8());
+
+            for (var i = 0; i < 100; ++i)
+            {
+                target.SetValue(TestClass.StringProperty, "foo");
+                target.SetValue(TestClass.Struct1Property, new Struct1());
+                target.SetValue(TestClass.Struct2Property, new Struct2());
+                target.SetValue(TestClass.Struct3Property, new Struct3());
+                target.SetValue(TestClass.Struct4Property, new Struct4());
+                target.SetValue(TestClass.Struct5Property, new Struct5());
+                target.SetValue(TestClass.Struct6Property, new Struct6());
+                target.SetValue(TestClass.Struct7Property, new Struct7());
+                target.SetValue(TestClass.Struct8Property, new Struct8());
+            }
             
             var v0 = target.GetValue(TestClass.StringProperty);
             var v1 = target.GetValue(TestClass.Struct1Property);
@@ -28,6 +32,35 @@ namespace Avalonia.Benchmarks
             var v6 = target.GetValue(TestClass.Struct6Property);
             var v7 = target.GetValue(TestClass.Struct7Property);
             var v8 = target.GetValue(TestClass.Struct8Property);
+        }
+
+        [Benchmark]
+        public void GetValues()
+        {
+            var target = new TestClass();
+
+            target.SetValue(TestClass.StringProperty, "foo");
+            target.SetValue(TestClass.Struct1Property, new Struct1());
+            target.SetValue(TestClass.Struct2Property, new Struct2());
+            target.SetValue(TestClass.Struct3Property, new Struct3());
+            target.SetValue(TestClass.Struct4Property, new Struct4());
+            target.SetValue(TestClass.Struct5Property, new Struct5());
+            target.SetValue(TestClass.Struct6Property, new Struct6());
+            target.SetValue(TestClass.Struct7Property, new Struct7());
+            target.SetValue(TestClass.Struct8Property, new Struct8());
+
+            for (var i = 0; i < 100; ++i)
+            {
+                var v0 = target.GetValue(TestClass.StringProperty);
+                var v1 = target.GetValue(TestClass.Struct1Property);
+                var v2 = target.GetValue(TestClass.Struct2Property);
+                var v3 = target.GetValue(TestClass.Struct3Property);
+                var v4 = target.GetValue(TestClass.Struct4Property);
+                var v5 = target.GetValue(TestClass.Struct5Property);
+                var v6 = target.GetValue(TestClass.Struct6Property);
+                var v7 = target.GetValue(TestClass.Struct7Property);
+                var v8 = target.GetValue(TestClass.Struct8Property);
+            }
         }
 
         private struct Struct1
