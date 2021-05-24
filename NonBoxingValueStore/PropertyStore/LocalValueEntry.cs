@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Avalonia.Data;
 
 #nullable enable
@@ -9,7 +10,8 @@ namespace Avalonia.PropertyStore
     {
         private readonly ValueStore _owner;
         private IDisposable? _bindingSubscription;
-        private Optional<T?> _value;
+        private bool _hasValue;
+        private T? _value;
 
         public LocalValueEntry(ValueStore owner, StyledPropertyBase<T> property)
         {
@@ -29,8 +31,9 @@ namespace Avalonia.PropertyStore
 
         public void ClearValue()
         {
-            if (_value.HasValue)
+            if (_hasValue)
             {
+                _hasValue = false;
                 _value = default;
                 _owner.LocalValueChanged(Property);
             }
@@ -44,7 +47,7 @@ namespace Avalonia.PropertyStore
 
         public void SetValue(T? value)
         {
-            if (_value != value)
+            if (!EqualityComparer<T>.Default.Equals(_value, value))
             {
                 _value = value;
                 _owner.LocalValueChanged(Property);
@@ -53,26 +56,14 @@ namespace Avalonia.PropertyStore
 
         public bool TryGetValue(out T? value)
         {
-            if (_value.HasValue)
-            {
-                value = _value.Value;
-                return true;
-            }
-
-            value = default;
-            return false;
+            value = _value;
+            return _hasValue;
         }
 
         public bool TryGetValue(out object? value)
         {
-            if (_value.HasValue)
-            {
-                value = _value.Value;
-                return true;
-            }
-
-            value = default;
-            return false;
+            value = _value;
+            return _hasValue;
         }
 
         void IObserver<BindingValue<T>>.OnCompleted() => ClearValue();
