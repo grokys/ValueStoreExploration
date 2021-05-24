@@ -6,67 +6,67 @@ namespace Avalonia.Base.UnitTests
 {
     public class AvaloniaObjectTests_SetValue
     {
-        ////[Fact]
-        ////public void ClearValue_Clears_Value()
-        ////{
-        ////    Class1 target = new Class1();
+        [Fact]
+        public void ClearValue_Clears_Value()
+        {
+            Class1 target = new Class1();
 
-        ////    target.SetValue(Class1.FooProperty, "newvalue");
-        ////    target.ClearValue(Class1.FooProperty);
+            target.SetValue(Class1.FooProperty, "newvalue");
+            target.ClearValue(Class1.FooProperty);
 
-        ////    Assert.Equal("foodefault", target.GetValue(Class1.FooProperty));
-        ////}
+            Assert.Equal("foodefault", target.GetValue(Class1.FooProperty));
+        }
 
-        ////[Fact]
-        ////public void ClearValue_Raises_PropertyChanged()
-        ////{
-        ////    Class1 target = new Class1();
-        ////    var raised = 0;
+        [Fact]
+        public void ClearValue_Raises_PropertyChanged()
+        {
+            Class1 target = new Class1();
+            var raised = 0;
 
-        ////    target.SetValue(Class1.FooProperty, "newvalue");
-        ////    target.PropertyChanged += (s, e) =>
-        ////    {
-        ////        Assert.Same(target, s);
-        ////        Assert.Equal(BindingPriority.Unset, e.Priority);
-        ////        Assert.Equal(Class1.FooProperty, e.Property);
-        ////        Assert.Equal("newvalue", (string)e.OldValue);
-        ////        Assert.Equal("foodefault", (string)e.NewValue);
-        ////        ++raised;
-        ////    };
+            target.SetValue(Class1.FooProperty, "newvalue");
+            target.PropertyChanged += (s, e) =>
+            {
+                Assert.Same(target, s);
+                Assert.Equal(BindingPriority.Unset, e.Priority);
+                Assert.Equal(Class1.FooProperty, e.Property);
+                Assert.Equal("newvalue", (string?)e.OldValue);
+                Assert.Equal("foodefault", (string?)e.NewValue);
+                ++raised;
+            };
 
-        ////    target.ClearValue(Class1.FooProperty);
+            target.ClearValue(Class1.FooProperty);
 
-        ////    Assert.Equal(1, raised);
-        ////}
+            Assert.Equal(1, raised);
+        }
 
-        ////[Fact]
-        ////public void IsSet_Returns_False_For_Unset_Property()
-        ////{
-        ////    var target = new Class1();
+        [Fact]
+        public void IsSet_Returns_False_For_Unset_Property()
+        {
+            var target = new Class1();
 
-        ////    Assert.False(target.IsSet(Class1.FooProperty));
-        ////}
+            Assert.False(target.IsSet(Class1.FooProperty));
+        }
 
-        ////[Fact]
-        ////public void IsSet_Returns_False_For_Set_Property()
-        ////{
-        ////    var target = new Class1();
+        [Fact]
+        public void IsSet_Returns_False_For_Set_Property()
+        {
+            var target = new Class1();
 
-        ////    target.SetValue(Class1.FooProperty, "foo");
+            target.SetValue(Class1.FooProperty, "foo");
 
-        ////    Assert.True(target.IsSet(Class1.FooProperty));
-        ////}
+            Assert.True(target.IsSet(Class1.FooProperty));
+        }
 
-        ////[Fact]
-        ////public void IsSet_Returns_False_For_Cleared_Property()
-        ////{
-        ////    var target = new Class1();
+        [Fact]
+        public void IsSet_Returns_False_For_Cleared_Property()
+        {
+            var target = new Class1();
 
-        ////    target.SetValue(Class1.FooProperty, "foo");
-        ////    target.SetValue(Class1.FooProperty, AvaloniaProperty.UnsetValue);
+            target.SetValue(Class1.FooProperty, "foo");
+            target.ClearValue(Class1.FooProperty);
 
-        ////    Assert.False(target.IsSet(Class1.FooProperty));
-        ////}
+            Assert.False(target.IsSet(Class1.FooProperty));
+        }
 
         [Fact]
         public void SetValue_Sets_Value()

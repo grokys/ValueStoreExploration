@@ -26,6 +26,11 @@ namespace Avalonia.PropertyStore
             return e.AddBinding(source);
         }
 
+        public bool ClearValue(AvaloniaProperty property)
+        {
+            return _entries.Remove(property.Id);
+        }
+
         public void SetValue<T>(ValueStore owner, StyledPropertyBase<T> property, T? value)
         {
             if (_entries.TryGetValue(property.Id, out var entry))

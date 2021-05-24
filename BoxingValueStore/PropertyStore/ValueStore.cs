@@ -26,6 +26,12 @@ namespace Avalonia.PropertyStore
                 ReevaluateEffectiveValues();
         }
 
+        public void ClearLocalValue<T>(StyledPropertyBase<T> property)
+        {
+            if (_localValues?.ClearValue(property) == true)
+                ReevaluateEffectiveValue(property);
+        }
+
         public void EndStyling()
         {
             if (--_applyingStyles == 0)

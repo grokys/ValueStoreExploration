@@ -25,10 +25,7 @@ namespace Avalonia
             throw new NotImplementedException();
         }
 
-        public void ClearValue<T>(StyledPropertyBase<T> property)
-        {
-            throw new NotImplementedException();
-        }
+        public void ClearValue<T>(StyledPropertyBase<T> property) => _values.ClearLocalValue(property);
 
         public void CoerceValue<T>(StyledPropertyBase<T> property)
         {
@@ -45,10 +42,7 @@ namespace Avalonia
             throw new NotImplementedException();
         }
 
-        public bool IsSet(AvaloniaProperty property)
-        {
-            throw new NotImplementedException();
-        }
+        public bool IsSet(AvaloniaProperty property) => _values.IsSet(property);
 
         public void RemoveInheritanceChild(IAvaloniaObject child)
         {

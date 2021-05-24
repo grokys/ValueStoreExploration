@@ -49,6 +49,12 @@ namespace Avalonia.PropertyStore
             return result;
         }
 
+        public void ClearLocalValue<T>(StyledPropertyBase<T> property)
+        {
+            if (_localValues?.ClearValue(property) == true)
+                ReevaluateEffectiveValue(property);
+        }
+
         public void SetLocalValue<T>(StyledPropertyBase<T> property, T? value)
         {
             if (_localValues is null)
