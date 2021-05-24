@@ -1,10 +1,17 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Runtime.CompilerServices;
+using BenchmarkDotNet.Attributes;
 
 namespace Avalonia.Benchmarks
 {
     [MemoryDiagnoser]
     public class GetSetValueBenchmarks
     {
+        [GlobalSetup]
+        public void RegisterProperties()
+        {
+            RuntimeHelpers.RunClassConstructor(typeof(TestClass).TypeHandle);
+        }
+
         [Benchmark]
         public void GetValues()
         {
