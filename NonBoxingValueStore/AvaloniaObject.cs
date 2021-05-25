@@ -67,7 +67,8 @@ namespace Avalonia
         private protected void BeginStyling() => _values.BeginStyling();
         private protected void EndStyling() => _values.EndStyling();
 
-        internal void RaisePropertyChanged<T>(
+        // TODO: Make internal
+        public void RaisePropertyChanged<T>(
             AvaloniaProperty<T> property,
             Optional<T> oldValue,
             BindingValue<T> newValue,

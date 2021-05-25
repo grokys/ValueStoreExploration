@@ -58,7 +58,7 @@ namespace Avalonia.PropertyStore
                 return true;
             }
 
-            value = default;
+            value = AvaloniaProperty.UnsetValue;
             return false;
         }
 

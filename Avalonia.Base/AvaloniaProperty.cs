@@ -326,15 +326,6 @@ namespace Avalonia
         }
 
         /// <summary>
-        /// Uses the visitor pattern to resolve an untyped property to a typed property.
-        /// </summary>
-        /// <typeparam name="TData">The type of user data passed.</typeparam>
-        /// <param name="vistor">The visitor which will accept the typed property.</param>
-        /// <param name="data">The user data to pass.</param>
-        public abstract void Accept<TData>(IAvaloniaPropertyVisitor<TData> vistor, ref TData data)
-            where TData : struct;
-
-        /// <summary>
         /// Overrides the metadata for the property on the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
@@ -354,6 +345,12 @@ namespace Avalonia
 
             _hasMetadataOverrides = true;
         }
+
+        internal abstract void RaisePropertyChanged(
+            IAvaloniaObject owner,
+            object oldValue,
+            object newValue,
+            BindingPriority priority);
 
         private AvaloniaPropertyMetadata GetMetadataWithOverrides(Type type)
         {

@@ -136,15 +136,7 @@ namespace Avalonia.PropertyStore
                 _effectiveValues.Remove(property.Id);
             }
 
-            if (!Equals(oldValue!, newValue!))
-            {
-                _owner.RaisePropertyChanged(property, oldValue, newValue, priority);
-            }
-        }
-
-        private object? GetDefaultValue(AvaloniaProperty property)
-        {
-            return ((IStyledPropertyAccessor)property).GetDefaultValue(_owner.GetType());
+            RaisePropertyChanged(property, oldValue, newValue, priority);
         }
 
         private bool ReevaluateEffectiveValue(
@@ -184,6 +176,7 @@ namespace Avalonia.PropertyStore
         private void ReevaluateEffectiveValues()
         {
             var newValues = new Dictionary<int, object?>();
+            var priorities = new Dictionary<int, BindingPriority>();
 
             for (var i = _frames.Count - 1; i >= 0; --i)
             {
@@ -202,13 +195,67 @@ namespace Avalonia.PropertyStore
                         value.TryGetValue(out var v))
                     {
                         newValues.Add(value.Property.Id, v);
+                        priorities.Add(value.Property.Id, frame.Priority);
                     }
                 }
             }
 
-            var oldValues = newValues;
+            var oldValues = _effectiveValues;
             var registry = AvaloniaPropertyRegistry.Instance;
             _effectiveValues = newValues;
+
+            foreach (var (id, newValue) in newValues)
+            {
+                var property = registry.FindRegistered(id);
+
+                if (property is object)
+                {
+                    if (oldValues is null || !oldValues.TryGetValue(id, out var oldValue))
+                        oldValue = GetDefaultValue(property);
+                    RaisePropertyChanged(property, oldValue, newValue, priorities[id]);
+                }
+                else
+                {
+                    // TODO: Log error. Non-registered property changed.
+                }
+
+                oldValues?.Remove(id);
+            }
+
+            if (oldValues is object)
+            {
+                foreach (var (id, oldValue) in oldValues)
+                {
+                    var property = registry.FindRegistered(id);
+
+                    if (property is object)
+                    {
+                        var newValue = GetDefaultValue(property);
+                        RaisePropertyChanged(property, oldValue, newValue, BindingPriority.Unset);
+                    }
+                    else
+                    {
+                        // TODO: Log error. Non-registered property changed.
+                    }
+                }
+            }
+        }
+
+        private object? GetDefaultValue(AvaloniaProperty property)
+        {
+            return ((IStyledPropertyAccessor)property).GetDefaultValue(_owner.GetType());
+        }
+
+        private void RaisePropertyChanged(
+            AvaloniaProperty property,
+            object? oldValue,
+            object? newValue,
+            BindingPriority priority)
+        {
+            if (!Equals(oldValue, newValue))
+            {
+                _owner.RaisePropertyChanged(property, oldValue, newValue, priority);
+            }
         }
 
         private class FrameComparer : IComparer<IValueFrame>

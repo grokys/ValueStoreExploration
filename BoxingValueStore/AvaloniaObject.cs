@@ -63,6 +63,16 @@ namespace Avalonia
         private protected void BeginStyling() => _values.BeginStyling();
         private protected void EndStyling() => _values.EndStyling();
 
+        // TODO: Not needed
+        public void RaisePropertyChanged<T>(
+            AvaloniaProperty<T> property,
+            Optional<T> oldValue,
+            BindingValue<T> newValue,
+            BindingPriority priority = BindingPriority.LocalValue)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void RaisePropertyChanged(
             AvaloniaProperty property,
             object? oldValue,

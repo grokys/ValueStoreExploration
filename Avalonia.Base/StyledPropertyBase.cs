@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Avalonia.Data;
 using Avalonia.Utilities;
@@ -160,12 +161,6 @@ namespace Avalonia
             base.OverrideMetadata(type, metadata);
         }
 
-        /// <inheritdoc/>
-        public override void Accept<TData>(IAvaloniaPropertyVisitor<TData> vistor, ref TData data)
-        {
-            vistor.Visit(this, ref data);
-        }
-
         /// <summary>
         /// Gets the string representation of the property.
         /// </summary>
@@ -177,6 +172,17 @@ namespace Avalonia
 
         /// <inheritdoc/>
         object IStyledPropertyAccessor.GetDefaultValue(Type type) => GetDefaultBoxedValue(type);
+
+        internal override void RaisePropertyChanged(
+            IAvaloniaObject owner,
+            object oldValue,
+            object newValue,
+            BindingPriority priority)
+        {
+            var o = oldValue != UnsetValue ? new Optional<TValue>((TValue)oldValue) : default;
+            var n = newValue != UnsetValue ? new BindingValue<TValue>((TValue)newValue) : default;
+            owner.RaisePropertyChanged(this, o, n, priority);
+        }
 
         private object GetDefaultBoxedValue(Type type)
         {

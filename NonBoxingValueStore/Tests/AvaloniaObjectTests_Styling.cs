@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Styling;
 using Xunit;
@@ -68,10 +69,7 @@ namespace Avalonia.Base.UnitTests
             var target = new Class1();
             var style = new Style(x => x.OfType<Class1>().Class("foo"))
             {
-                Setters =
-                {
-                    new Setter(Class1.FooProperty, "Foo"),
-                },
+                Setters = { new Setter(Class1.FooProperty, "Foo") },
             };
 
             ApplyStyles(target, style);
@@ -81,6 +79,42 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("Foo", target.Foo);
             target.Classes.Remove("foo");
             Assert.Equal("foodefault", target.Foo);
+        }
+
+        [Fact]
+        public void Raises_PropertyChanged_For_Style_Activation_Changes_1()
+        {
+            var styles = new[]
+            {
+                new Style(x => x.OfType<Class1>().Class("foo"))
+                {
+                    Setters = { new Setter(Class1.FooProperty, "Foo") },
+                },
+
+                new Style(x => x.OfType<Class1>().Class("bar"))
+                {
+                    Setters = { new Setter(Class1.FooProperty, "Bar") },
+                }
+            };
+
+            var target = new Class1();
+            var values = new List<string?> { target.Foo };
+
+            target.PropertyChanged += (s, e) =>
+            {
+                if (e.Property == Class1.FooProperty)
+                {
+                    values.Add((string?)e.NewValue);
+                }
+            };
+
+            ApplyStyles(target, styles);
+            target.Classes.Add("foo");
+            target.Classes.Add("bar");
+            target.Classes.Remove("foo");
+            target.Classes.Remove("bar");
+
+            Assert.Equal(new[] { "foodefault", "Foo", "Bar", "foodefault" }, values);
         }
 
         private static void ApplyStyles(IStyleable target, params Style[] styles)
