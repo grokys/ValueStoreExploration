@@ -1,4 +1,3 @@
-#if !BOXING
 using Avalonia.Controls;
 using Avalonia.Styling;
 using Xunit;
@@ -21,6 +20,7 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("foo", target.Foo);
         }
 
+#if !BOXING
         [Fact]
         public void Applies_Style_With_Typed_Setter()
         {
@@ -34,6 +34,7 @@ namespace Avalonia.Base.UnitTests
 
             Assert.Equal("foo", target.Foo);
         }
+#endif
 
         private void ApplyStyles(IStyleable target, params Style[] styles)
         {
@@ -56,4 +57,3 @@ namespace Avalonia.Base.UnitTests
         }
     }
 }
-#endif
