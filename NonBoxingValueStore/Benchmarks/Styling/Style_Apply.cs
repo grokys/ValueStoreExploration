@@ -1,40 +1,61 @@
-﻿using System.Reactive.Subjects;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Styling;
 using BenchmarkDotNet.Attributes;
 
-namespace Avalonia.Benchmarks.AvaloniaObjectBenchmarks
+namespace Avalonia.Benchmarks.Styling
 {
     [MemoryDiagnoser]
-    public class StylingBenchmarks
+    public class Style_Apply
     {
-        private TestClass test1 = null!;
+        private List<Style> _styles = new();
+
+        public Style_Apply()
+        {
+            RuntimeHelpers.RunClassConstructor(typeof(TestClass).TypeHandle);
+        }
+
+        [Params(1, 5, 50)]
+        public int MatchingStyles { get; set; }
+
+
+        [Params(1, 5, 50)]
+        public int NonMatchingStyles { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
-            RuntimeHelpers.RunClassConstructor(typeof(TestClass).TypeHandle);
+            _styles.Clear();
 
-            test1 = new TestClass();
-
-            var style = new Style(x => x.OfType<TestClass>().Class("foo"))
+            for (var i = 0; i < MatchingStyles; ++i)
             {
-                Setters = { new Setter(TestClass.StringProperty, "foo") }
-            };
+                _styles.Add(new Style(x => x.OfType<TestClass>())
+                {
+                    Setters = { new Setter(TestClass.StringProperty, "foo") }
+                });
+            }
 
-            ((IStyleable)test1).ApplyStyle(style);
+            for (var i = 0; i < NonMatchingStyles; ++i)
+            {
+                _styles.Add(new Style(x => x.OfType<TestClass2>().Class("missing"))
+                {
+                    Setters = { new Setter(TestClass.StringProperty, "foo") }
+                });
+            }
         }
 
         [Benchmark]
-        public void Toggle_Style_Activation_Via_Class()
+        public void Apply_Simple_Styles()
         {
-            for (var i = 0; i < 100; ++i)
-            {
-                test1.Classes.Add("foo");
-                test1.Classes.Remove("foo");
-            }
+            var target = (IStyleable)new TestClass();
+
+            target.BeginStyling();
+
+            foreach (var style in _styles)
+                target.ApplyStyle(style);
+
+            target.EndStyling();
         }
 
         private class TestClass : Control
@@ -57,6 +78,10 @@ namespace Avalonia.Benchmarks.AvaloniaObjectBenchmarks
                 AvaloniaProperty.Register<TestClass, Struct7>("Struct7");
             public static readonly StyledProperty<Struct8> Struct8Property =
                 AvaloniaProperty.Register<TestClass, Struct8>("Struct8");
+        }
+
+        private class TestClass2 : Control
+        {
         }
     }
 }

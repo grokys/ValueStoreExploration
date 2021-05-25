@@ -1,42 +1,37 @@
-﻿using System.Reactive.Subjects;
-using System.Runtime.CompilerServices;
-using Avalonia.Data;
+﻿using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 
-namespace Avalonia.Benchmarks.AvaloniaObjectBenchmarks
+namespace Avalonia.Benchmarks.Base
 {
     [MemoryDiagnoser]
-    public class BindingBenchmarks
+    public class AvaloniaObject_Binding
     {
-        private static TestBindingObservable<string?> s_stringSource = null!;
-        private static TestBindingObservable<Struct1> s_struct1Source = null!;
-        private static TestBindingObservable<Struct2> s_struct2Source = null!;
-        private static TestBindingObservable<Struct3> s_struct3Source = null!;
-        private static TestBindingObservable<Struct4> s_struct4Source = null!;
-        private static TestBindingObservable<Struct5> s_struct5Source = null!;
-        private static TestBindingObservable<Struct6> s_struct6Source = null!;
-        private static TestBindingObservable<Struct7> s_struct7Source = null!;
-        private static TestBindingObservable<Struct8> s_struct8Source = null!;
+        private static TestClass _target = null!;
+        private static TestBindingObservable<string?> s_stringSource = new();
+        private static TestBindingObservable<Struct1> s_struct1Source = new();
+        private static TestBindingObservable<Struct2> s_struct2Source = new();
+        private static TestBindingObservable<Struct3> s_struct3Source = new();
+        private static TestBindingObservable<Struct4> s_struct4Source = new();
+        private static TestBindingObservable<Struct5> s_struct5Source = new();
+        private static TestBindingObservable<Struct6> s_struct6Source = new();
+        private static TestBindingObservable<Struct7> s_struct7Source = new();
+        private static TestBindingObservable<Struct8> s_struct8Source = new();
+
+        public AvaloniaObject_Binding()
+        {
+            RuntimeHelpers.RunClassConstructor(typeof(TestClass).TypeHandle);
+        }
 
         [GlobalSetup]
         public void Setup()
         {
-            RuntimeHelpers.RunClassConstructor(typeof(TestClass).TypeHandle);
-            s_stringSource = new();
-            s_struct1Source = new();
-            s_struct2Source = new();
-            s_struct3Source = new();
-            s_struct4Source = new();
-            s_struct5Source = new();
-            s_struct6Source = new();
-            s_struct7Source = new();
-            s_struct8Source = new();
+            _target = new TestClass();
         }
 
         [Benchmark]
         public void Setup_Dispose_LocalValue_Bindings()
         {
-            var target = new TestClass();
+            var target = _target;
 
             for (var i = 0; i < 100; ++i)
             {
@@ -56,7 +51,7 @@ namespace Avalonia.Benchmarks.AvaloniaObjectBenchmarks
         [Benchmark]
         public void Fire_LocalValue_Bindings()
         {
-            var target = new TestClass();
+            var target = _target;
 
             using var s0 = target.Bind(TestClass.StringProperty, s_stringSource);
             using var s1 = target.Bind(TestClass.Struct1Property, s_struct1Source);
