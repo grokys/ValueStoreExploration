@@ -64,6 +64,36 @@ namespace Avalonia.Base.UnitTests
         }
 
         [Fact]
+        public void Style_Doesnt_Override_LocalValue()
+        {
+            var target = new Class1();
+            var style = new Style(x => x.OfType<Class1>())
+            {
+                Setters = { new Setter(Class1.FooProperty, "bar") }
+            };
+
+            target.SetValue(Class1.FooProperty, "foo");
+            ApplyStyles(target, style);
+
+            Assert.Equal("foo", target.Foo);
+        }
+
+        [Fact]
+        public void Style_Doesnt_Override_LocalValue_2()
+        {
+            var target = new Class1();
+            var style = new Style(x => x.OfType<Class1>())
+            {
+                Setters = { new Setter(Class1.FooProperty, "bar") }
+            };
+
+            ApplyStyles(target, style);
+            target.SetValue(Class1.FooProperty, "foo");
+
+            Assert.Equal("foo", target.Foo);
+        }
+
+        [Fact]
         public void Style_With_Class_Selector_Should_Update_And_Restore_Value()
         {
             var target = new Class1();
