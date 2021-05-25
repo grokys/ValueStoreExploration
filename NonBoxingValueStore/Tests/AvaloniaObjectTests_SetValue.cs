@@ -98,8 +98,8 @@ namespace Avalonia.Base.UnitTests
             {
                 raised = s == target &&
                          e.Property == Class1.FooProperty &&
-                         (string)e.OldValue == "foodefault" &&
-                         (string)e.NewValue == "newvalue";
+                         (string?)e.OldValue == "foodefault" &&
+                         (string?)e.NewValue == "newvalue";
             };
 
             target.SetValue(Class1.FooProperty, "newvalue");

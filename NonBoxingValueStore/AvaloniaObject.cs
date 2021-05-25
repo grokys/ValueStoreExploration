@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia.Data;
 using Avalonia.PropertyStore;
+using Avalonia.Styling;
 
 namespace Avalonia
 {
@@ -61,6 +62,10 @@ namespace Avalonia
         {
             PropertyChanged?.Invoke(this, e);
         }
+
+        private protected void ApplyStyle(IValueFrame frame) => _values.ApplyStyle(frame);
+        private protected void BeginStyling() => _values.BeginStyling();
+        private protected void EndStyling() => _values.EndStyling();
 
         internal void RaisePropertyChanged<T>(
             AvaloniaProperty<T> property,

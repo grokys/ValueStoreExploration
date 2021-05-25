@@ -76,10 +76,17 @@ namespace Avalonia.PropertyStore
         public bool TryGetValue<T>(StyledPropertyBase<T> property, out T? result)
         {
             if (_effectiveValues is object &&
-                _effectiveValues.TryGetValue(property.Id, out var value) &&
-                ((IValue<T>)value).TryGetValue(out result))
+                _effectiveValues.TryGetValue(property.Id, out var value))
             {
-                return true;
+                if (value is IValue<T> typed)
+                {
+                    return typed.TryGetValue(out result); 
+                }
+                else if (value.TryGetValue(out var untyped))
+                {
+                    result = (T?)untyped;
+                    return true;
+                }
             }
 
             result = default;

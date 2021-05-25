@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Avalonia</RootNamespace>
   </PropertyGroup>
 
 </Project>

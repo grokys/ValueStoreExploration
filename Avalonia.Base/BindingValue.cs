@@ -220,7 +220,7 @@ namespace Avalonia.Data
             {
                 UnsetValueType _ => Unset,
                 DoNothingType _ => DoNothing,
-                _ => new BindingValue<T>((T)value)
+                _ => new BindingValue<T>((T?)value)
             };
         }
 
