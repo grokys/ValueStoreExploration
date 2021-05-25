@@ -83,22 +83,6 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("foodefault", target.Foo);
         }
 
-#if !BOXING
-        [Fact]
-        public void Applies_Style_With_Typed_Setter()
-        {
-            var target = new Class1();
-            var style = new Style(x => x.OfType<Class1>())
-            {
-                Setters = { new Setter<string?>(Class1.FooProperty, "foo") }
-            };
-
-            ApplyStyles(target, style);
-
-            Assert.Equal("foo", target.Foo);
-        }
-#endif
-
         private static void ApplyStyles(IStyleable target, params Style[] styles)
         {
             target.BeginStyling();
