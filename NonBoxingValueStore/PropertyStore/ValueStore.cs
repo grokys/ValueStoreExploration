@@ -127,6 +127,7 @@ namespace Avalonia.PropertyStore
             if (index < 0)
                 index = ~index;
             _frames.Insert(index, frame);
+            frame.SetOwner(this);
         }
 
         private void ReevaluateEffectiveValue<T>(StyledPropertyBase<T> property)

@@ -22,8 +22,13 @@ namespace Avalonia.Styling
         public Selector? Selector { get; }
         public IList<ISetter> Setters => _setters;
 
-        internal IValueFrame? Instance(IStyleable o)
+        internal IValueFrame? Instance(IStyleable target)
         {
+            var match = Selector?.Evaluate(target, true);
+
+            if (match?.IsMatch != true)
+                return null;
+
             if (_sharedInstance is object)
                 return _sharedInstance;
 
@@ -32,12 +37,12 @@ namespace Avalonia.Styling
 
             foreach (var setter in _setters)
             {
-                var setterInstance = setter.Instance(o);
+                var setterInstance = setter.Instance(target);
                 setterInstances.Add(setterInstance);
                 canInstanceInPlace &= setterInstance == setter;
             }
 
-            var instance = new StyleInstance(BindingPriority.Style, setterInstances);
+            var instance = new StyleInstance(setterInstances, match.Value.Activator);
 
             if (canInstanceInPlace)
                 _sharedInstance = instance;

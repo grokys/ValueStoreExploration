@@ -8,7 +8,10 @@ namespace Avalonia.PropertyStore
         public override bool IsActive => true;
         public override BindingPriority Priority => BindingPriority.LocalValue;
 
-        public IDisposable AddBinding<T>(ValueStore owner, StyledPropertyBase<T> property, IObservable<BindingValue<T>> source)
+        public IDisposable AddBinding<T>(
+            ValueStore owner,
+            StyledPropertyBase<T> property,
+            IObservable<BindingValue<T>> source)
         {
             if (TryGet(property, out var entry))
             {

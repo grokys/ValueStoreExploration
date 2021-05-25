@@ -20,6 +20,69 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("foo", target.Foo);
         }
 
+        [Fact]
+        public void Later_Style_Overrides_Prior()
+        {
+            var target = new Class1();
+            var styles = new[]
+            {
+                new Style(x => x.OfType<Class1>())
+                {
+                    Setters = { new Setter(Class1.FooProperty, "foo") }
+                },
+                new Style(x => x.OfType<Class1>())
+                {
+                    Setters = { new Setter(Class1.FooProperty, "bar") }
+                },
+            };
+
+            ApplyStyles(target, styles);
+
+            Assert.Equal("bar", target.Foo);
+        }
+
+        [Fact]
+        public void Later_Style_Doesnt_Override_Prior_Style_Of_Higher_Priority()
+        {
+            var target = new Class1 { Classes = { "class" } };
+            var styles = new[]
+            {
+                new Style(x => x.OfType<Class1>().Class("class"))
+                {
+                    Setters = { new Setter(Class1.FooProperty, "foo") }
+                },
+                new Style(x => x.OfType<Class1>())
+                {
+                    Setters = { new Setter(Class1.FooProperty, "bar") }
+                },
+            };
+
+            ApplyStyles(target, styles);
+
+            Assert.Equal("foo", target.Foo);
+        }
+
+        [Fact]
+        public void Style_With_Class_Selector_Should_Update_And_Restore_Value()
+        {
+            var target = new Class1();
+            var style = new Style(x => x.OfType<Class1>().Class("foo"))
+            {
+                Setters =
+                {
+                    new Setter(Class1.FooProperty, "Foo"),
+                },
+            };
+
+            ApplyStyles(target, style);
+
+            Assert.Equal("foodefault", target.Foo);
+            target.Classes.Add("foo");
+            Assert.Equal("Foo", target.Foo);
+            target.Classes.Remove("foo");
+            Assert.Equal("foodefault", target.Foo);
+        }
+
 #if !BOXING
         [Fact]
         public void Applies_Style_With_Typed_Setter()
@@ -36,7 +99,7 @@ namespace Avalonia.Base.UnitTests
         }
 #endif
 
-        private void ApplyStyles(IStyleable target, params Style[] styles)
+        private static void ApplyStyles(IStyleable target, params Style[] styles)
         {
             target.BeginStyling();
             foreach (var style in styles)

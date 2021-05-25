@@ -1,8 +1,6 @@
 ﻿using System;
 using Avalonia.Data;
 
-#nullable enable
-
 namespace Avalonia.PropertyStore
 {
     internal class LocalValueFrame : ValueFrameBase

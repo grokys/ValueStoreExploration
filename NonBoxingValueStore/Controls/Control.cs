@@ -9,7 +9,8 @@ namespace Avalonia.Controls
     {
         private AvaloniaList<string>? _classes;
 
-        public IAvaloniaReadOnlyList<string> Classes => _classes ??= new AvaloniaList<string>();
+        public AvaloniaList<string> Classes => _classes ??= new AvaloniaList<string>();
+        IAvaloniaReadOnlyList<string> IStyleable.Classes => Classes;
 
         public Type StyleKey => GetType();
 

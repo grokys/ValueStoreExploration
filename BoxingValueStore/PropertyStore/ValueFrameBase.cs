@@ -6,11 +6,15 @@ namespace Avalonia.PropertyStore
 {
     internal abstract class ValueFrameBase : IValueFrame
     {
-        private SortedList<int, IValue> _values = new();
+        private readonly SortedList<int, IValue> _values = new();
 
         public abstract bool IsActive { get; }
         public abstract BindingPriority Priority { get; }
         public IList<IValue> Values => _values.Values;
+
+        public virtual void SetOwner(ValueStore? store)
+        {
+        }
 
         public bool TryGet(AvaloniaProperty property, [NotNullWhen(true)] out IValue? value)
         {
