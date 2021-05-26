@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Avalonia.Data;
 using Avalonia.PropertyStore;
 
 namespace Avalonia.Styling
@@ -32,17 +31,18 @@ namespace Avalonia.Styling
             if (_sharedInstance is object)
                 return _sharedInstance;
 
-            var setterInstances = new List<ISetterInstance>();
+            var instance = new StyleInstance(match.Value.Activator);
             var canInstanceInPlace = true;
 
             foreach (var setter in _setters)
             {
-                var setterInstance = setter.Instance(target);
-                setterInstances.Add(setterInstance);
-                canInstanceInPlace &= setterInstance == setter;
+                if (setter is IValueStoreSetter v)
+                {
+                    var setterInstance = v.Instance(instance, target);
+                    instance.Add(setterInstance);
+                    canInstanceInPlace &= setterInstance == setter;
+                }
             }
-
-            var instance = new StyleInstance(setterInstances, match.Value.Activator);
 
             if (canInstanceInPlace)
                 _sharedInstance = instance;

@@ -7,11 +7,11 @@ namespace Avalonia.PropertyStore
 {
     internal class LocalValueEntry<T> : IValue, IObserver<BindingValue<T>>, IDisposable
     {
-        private readonly ValueStore _owner;
+        private readonly LocalValueFrame _owner;
         private IDisposable? _bindingSubscription;
         private Optional<object?> _value;
 
-        public LocalValueEntry(ValueStore owner, AvaloniaProperty property)
+        public LocalValueEntry(LocalValueFrame owner, AvaloniaProperty property)
         {
             _owner = owner;
             Property = property;
@@ -31,7 +31,7 @@ namespace Avalonia.PropertyStore
             if (_value.HasValue)
             {
                 _value = default;
-                _owner.LocalValueChanged(Property);
+                _owner.ValueStore.ValueChanged(_owner, Property);
             }
         }
 
@@ -46,7 +46,7 @@ namespace Avalonia.PropertyStore
             if (_value != value)
             {
                 _value = value;
-                _owner.LocalValueChanged(Property);
+                _owner.ValueStore.ValueChanged(_owner, Property);
             }
         }
 

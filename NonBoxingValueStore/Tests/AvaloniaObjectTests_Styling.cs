@@ -202,6 +202,34 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal(new[] { "foodefault", "Foo", "Bar", "foodefault" }, values);
         }
 
+        [Fact]
+        public void Raises_PropertyChanged_For_Binding_Changes()
+        {
+            var target = new Class1();
+            var binding = new TestBinding("foo");
+            var style = new Style(x => x.OfType<Class1>())
+            {
+                Setters = { new Setter(Class1.FooProperty, binding) }
+            };
+
+            ApplyStyles(target, style);
+
+            var values = new List<string?> { target.Foo };
+
+            target.PropertyChanged += (s, e) =>
+            {
+                if (e.Property == Class1.FooProperty)
+                {
+                    values.Add((string?)e.NewValue);
+                }
+            };
+
+            binding.OnNext("bar");
+            binding.OnNext(AvaloniaProperty.UnsetValue);
+
+            Assert.Equal(new[] { "foo", "bar", "foodefault" }, values);
+        }
+
         private static void ApplyStyles(IStyleable target, params Style[] styles)
         {
             target.BeginStyling();

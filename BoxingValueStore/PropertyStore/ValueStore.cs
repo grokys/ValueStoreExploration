@@ -46,11 +46,11 @@ namespace Avalonia.PropertyStore
         {
             if (_localValues is null)
             {
-                _localValues = new LocalValueFrame();
+                _localValues = new LocalValueFrame(this);
                 AddFrame(_localValues);
             }
 
-            var result = _localValues.AddBinding(this, property, source);
+            var result = _localValues.AddBinding(property, source);
             ReevaluateEffectiveValue(property);
             return result;
         }
@@ -59,11 +59,11 @@ namespace Avalonia.PropertyStore
         {
             if (_localValues is null)
             {
-                _localValues = new LocalValueFrame();
+                _localValues = new LocalValueFrame(this);
                 AddFrame(_localValues);
             }
 
-            _localValues.SetValue(this, property, value);
+            _localValues.SetValue(property, value);
         }
 
         public object? GetValue(AvaloniaProperty property)
@@ -102,7 +102,7 @@ namespace Avalonia.PropertyStore
             return false;
         }
 
-        public void LocalValueChanged(AvaloniaProperty property)
+        public void ValueChanged(IValueFrame frame, AvaloniaProperty property)
         {
             ReevaluateEffectiveValue(property);
         }

@@ -10,19 +10,12 @@ namespace Avalonia.Styling
         private readonly IStyleActivator? _activator;
         private bool _isActivatorSubscribed;
         private bool _isActive;
-        private ValueStore? _valueStore;
 
-        public StyleInstance(IReadOnlyList<ISetterInstance> setters, IStyleActivator? activator)
+        public StyleInstance(IStyleActivator? activator)
         {
             _activator = activator;
             _isActive = activator is null;
             Priority = activator is object ? BindingPriority.StyleTrigger : BindingPriority.Style;
-
-            for (var i = 0; i < setters.Count; ++i)
-            {
-                if (setters[i] is IValue value)
-                    Add(value);
-            }
         }
 
         public override bool IsActive
@@ -39,22 +32,19 @@ namespace Avalonia.Styling
             }
         }
 
+        public ValueStore? ValueStore { get; private set; }
+
         public override BindingPriority Priority { get; }
 
-        public override void SetOwner(ValueStore? owner)
-        {
-            _valueStore = owner;
-
-            foreach (var value in Values)
-                (value as SetterBindingInstance)?.SetOwner(owner);
-        }
+        public new void Add(IValue value) => base.Add(value);
+        public override void SetOwner(ValueStore? owner) => ValueStore = owner;
 
         void IStyleActivatorSink.OnNext(bool value, int tag)
         {
             if (_isActive != value)
             {
                 _isActive = value;
-                _valueStore?.FrameActivationChanged(this);
+                ValueStore?.FrameActivationChanged(this);
             }
         }
     }

@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using Avalonia.Data;
 
-#nullable enable
-
 namespace Avalonia.PropertyStore
 {
     internal class LocalValueEntry<T> : IValue<T>, IObserver<BindingValue<T>>, IDisposable
     {
-        private readonly ValueStore _owner;
+        private readonly LocalValueFrame _owner;
         private IDisposable? _bindingSubscription;
         private bool _hasValue;
         private T? _value;
 
-        public LocalValueEntry(ValueStore owner, StyledPropertyBase<T> property)
+        public LocalValueEntry(LocalValueFrame owner, StyledPropertyBase<T> property)
         {
             _owner = owner;
             Property = property;
@@ -33,9 +31,10 @@ namespace Avalonia.PropertyStore
         {
             if (_hasValue)
             {
+                var oldValue = _hasValue ? _value : AvaloniaProperty.UnsetValue;
                 _hasValue = false;
                 _value = default;
-                _owner.LocalValueChanged(Property);
+                _owner.ValueStore.ValueChanged(_owner, Property, oldValue);
             }
         }
 
@@ -47,11 +46,12 @@ namespace Avalonia.PropertyStore
 
         public void SetValue(T? value)
         {
-            if (!EqualityComparer<T>.Default.Equals(_value, value))
+            if (!_hasValue || !EqualityComparer<T>.Default.Equals(_value, value))
             {
+                var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _value = value;
                 _hasValue = true;
-                _owner.LocalValueChanged(Property);
+                _owner.ValueStore.ValueChanged(_owner, Property, oldValue);
             }
         }
 
