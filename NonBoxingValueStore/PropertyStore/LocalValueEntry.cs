@@ -31,7 +31,7 @@ namespace Avalonia.PropertyStore
         {
             if (_hasValue)
             {
-                var oldValue = _hasValue ? _value : AvaloniaProperty.UnsetValue;
+                var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _hasValue = false;
                 _value = default;
                 _owner.ValueStore.ValueChanged(_owner, Property, oldValue);
