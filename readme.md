@@ -11,3 +11,5 @@ A probably incomplete todo:
 - [ ] Property value inhertance
 - [ ] Validation/coercion
 - [ ] GetBaseValue
+- [ ] GetObservable
+- [ ] OnPropertyChangedCore
