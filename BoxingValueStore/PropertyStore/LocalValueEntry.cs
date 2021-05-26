@@ -9,7 +9,7 @@ namespace Avalonia.PropertyStore
     {
         private readonly LocalValueFrame _owner;
         private IDisposable? _bindingSubscription;
-        private Optional<object?> _value;
+        private object? _value = AvaloniaProperty.UnsetValue;
 
         public LocalValueEntry(LocalValueFrame owner, AvaloniaProperty property)
         {
@@ -26,19 +26,10 @@ namespace Avalonia.PropertyStore
             return this;
         }
 
-        public void ClearValue()
-        {
-            if (_value.HasValue)
-            {
-                _value = default;
-                _owner.ValueStore.ValueChanged(_owner, Property);
-            }
-        }
-
         public void Dispose()
         {
             _bindingSubscription?.Dispose();
-            ClearValue();
+            SetValue(AvaloniaProperty.UnsetValue);
         }
 
         public void SetValue(object? value)
@@ -52,25 +43,19 @@ namespace Avalonia.PropertyStore
 
         public bool TryGetValue(out object? value)
         {
-            if (_value.HasValue)
-            {
-                value = _value.Value;
-                return true;
-            }
-
-            value = AvaloniaProperty.UnsetValue;
-            return false;
+            value = _value;
+            return value != AvaloniaProperty.UnsetValue;
         }
 
-        void IObserver<BindingValue<T>>.OnCompleted() => ClearValue();
-        void IObserver<BindingValue<T>>.OnError(Exception error) => ClearValue();
+        void IObserver<BindingValue<T>>.OnCompleted() => SetValue(AvaloniaProperty.UnsetValue);
+        void IObserver<BindingValue<T>>.OnError(Exception error) => SetValue(AvaloniaProperty.UnsetValue);
 
         void IObserver<BindingValue<T>>.OnNext(BindingValue<T> value)
         {
             if (value.HasValue)
                 SetValue(value.Value);
             else if (value.Type == BindingValueType.BindingError)
-                ClearValue();
+                SetValue(AvaloniaProperty.UnsetValue);
         }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Data;
 using Xunit;
@@ -102,20 +104,52 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("foodefault", target.GetValue(Class1.FooProperty));
         }
 
-        //[Fact]
-        //public void Completing_Animation_Binding_Reverts_To_Set_LocalValue()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<string>();
-        //    var property = Class1.FooProperty;
+        [Fact]
+        public void LocalValue_Binding_Should_Override_Style_Binding()
+        {
+            var target = new Class1();
+            var source1 = new BehaviorSubject<BindingValue<string>>("foo");
+            var source2 = new BehaviorSubject<BindingValue<string>>("bar");
 
-        //    target.SetValue(property, "foo");
-        //    target.Bind(property, source, BindingPriority.Animation);
-        //    source.OnNext("bar");
-        //    source.OnCompleted();
+            target.Bind(Class1.FooProperty, source1, BindingPriority.Style);
 
-        //    Assert.Equal("foo", target.GetValue(property));
-        //}
+            Assert.Equal("foo", target.GetValue(Class1.FooProperty));
+
+            target.Bind(Class1.FooProperty, source2, BindingPriority.LocalValue);
+
+            Assert.Equal("bar", target.GetValue(Class1.FooProperty));
+        }
+
+        [Fact]
+        public void Style_Binding_Should_NotOverride_LocalValue_Binding()
+        {
+            var target = new Class1();
+            var source1 = new BehaviorSubject<BindingValue<string>>("foo");
+            var source2 = new BehaviorSubject<BindingValue<string>>("bar");
+
+            target.Bind(Class1.FooProperty, source1, BindingPriority.LocalValue);
+
+            Assert.Equal("foo", target.GetValue(Class1.FooProperty));
+
+            target.Bind(Class1.FooProperty, source2, BindingPriority.Style);
+
+            Assert.Equal("foo", target.GetValue(Class1.FooProperty));
+        }
+
+        [Fact]
+        public void Completing_Animation_Binding_Reverts_To_Set_LocalValue()
+        {
+            var target = new Class1();
+            var source = new Subject<BindingValue<string>>();
+            var property = Class1.FooProperty;
+
+            target.SetValue(property, "foo");
+            target.Bind(property, source, BindingPriority.Animation);
+            source.OnNext("bar");
+            source.OnCompleted();
+
+            Assert.Equal("foo", target.GetValue(property));
+        }
 
         [Fact]
         public void Completing_LocalValue_Binding_Raises_PropertyChanged()
@@ -143,58 +177,58 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal(1, raised);
         }
 
-        //[Fact]
-        //public void Completing_Style_Binding_Raises_PropertyChanged()
-        //{
-        //    var target = new Class1();
-        //    var source = new BehaviorSubject<BindingValue<string>>("foo");
-        //    var property = Class1.FooProperty;
-        //    var raised = 0;
+        [Fact]
+        public void Completing_Style_Binding_Raises_PropertyChanged()
+        {
+            var target = new Class1();
+            var source = new BehaviorSubject<BindingValue<string>>("foo");
+            var property = Class1.FooProperty;
+            var raised = 0;
 
-        //    target.Bind(property, source, BindingPriority.Style);
-        //    Assert.Equal("foo", target.GetValue(property));
+            target.Bind(property, source, BindingPriority.Style);
+            Assert.Equal("foo", target.GetValue(property));
 
-        //    target.PropertyChanged += (s, e) =>
-        //    {
-        //        Assert.Equal(BindingPriority.Unset, e.Priority);
-        //        Assert.Equal(property, e.Property);
-        //        Assert.Equal("foo", e.OldValue as string);
-        //        Assert.Equal("foodefault", e.NewValue as string);
-        //        ++raised;
-        //    };
+            target.PropertyChanged += (s, e) =>
+            {
+                Assert.Equal(BindingPriority.Unset, e.Priority);
+                Assert.Equal(property, e.Property);
+                Assert.Equal("foo", e.OldValue as string);
+                Assert.Equal("foodefault", e.NewValue as string);
+                ++raised;
+            };
 
-        //    source.OnCompleted();
+            source.OnCompleted();
 
-        //    Assert.Equal("foodefault", target.GetValue(property));
-        //    Assert.Equal(1, raised);
-        //}
+            Assert.Equal("foodefault", target.GetValue(property));
+            Assert.Equal(1, raised);
+        }
 
-        //[Fact]
-        //public void Completing_LocalValue_Binding_With_Style_Binding_Raises_PropertyChanged()
-        //{
-        //    var target = new Class1();
-        //    var source = new BehaviorSubject<BindingValue<string>>("foo");
-        //    var property = Class1.FooProperty;
-        //    var raised = 0;
+        [Fact]
+        public void Completing_LocalValue_Binding_With_Style_Binding_Raises_PropertyChanged()
+        {
+            var target = new Class1();
+            var source = new BehaviorSubject<BindingValue<string>>("foo");
+            var property = Class1.FooProperty;
+            var raised = 0;
 
-        //    target.Bind(property, new BehaviorSubject<string>("bar"), BindingPriority.Style);
-        //    target.Bind(property, source);
-        //    Assert.Equal("foo", target.GetValue(property));
+            target.Bind(property, new BehaviorSubject<BindingValue<string>>("bar"), BindingPriority.Style);
+            target.Bind(property, source);
+            Assert.Equal("foo", target.GetValue(property));
 
-        //    target.PropertyChanged += (s, e) =>
-        //    {
-        //        Assert.Equal(BindingPriority.Style, e.Priority);
-        //        Assert.Equal(property, e.Property);
-        //        Assert.Equal("foo", e.OldValue as string);
-        //        Assert.Equal("bar", e.NewValue as string);
-        //        ++raised;
-        //    };
+            target.PropertyChanged += (s, e) =>
+            {
+                Assert.Equal(BindingPriority.Style, e.Priority);
+                Assert.Equal(property, e.Property);
+                Assert.Equal("foo", e.OldValue as string);
+                Assert.Equal("bar", e.NewValue as string);
+                ++raised;
+            };
 
-        //    source.OnCompleted();
+            source.OnCompleted();
 
-        //    Assert.Equal("bar", target.GetValue(property));
-        //    Assert.Equal(1, raised);
-        //}
+            Assert.Equal("bar", target.GetValue(property));
+            Assert.Equal(1, raised);
+        }
 
         [Fact]
         public void Disposing_LocalValue_Binding_Raises_PropertyChanged()
@@ -481,15 +515,15 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("third", target.GetValue(Class1.FooProperty));
         }
 
-        //[Fact]
-        //public void StyleBinding_Overrides_Default_Value()
-        //{
-        //    Class1 target = new Class1();
+        [Fact]
+        public void StyleBinding_Overrides_Default_Value()
+        {
+            Class1 target = new Class1();
 
-        //    target.Bind(Class1.FooProperty, Single("stylevalue"), BindingPriority.Style);
+            target.Bind(Class1.FooProperty, Single("stylevalue"), BindingPriority.Style);
 
-        //    Assert.Equal("stylevalue", target.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("stylevalue", target.GetValue(Class1.FooProperty));
+        }
 
         //[Fact]
         //public void this_Operator_Returns_Value_Property()
@@ -815,16 +849,16 @@ namespace Avalonia.Base.UnitTests
         //    subscription.Dispose();
         //}
 
-        ///// <summary>
-        ///// Returns an observable that returns a single value but does not complete.
-        ///// </summary>
-        ///// <typeparam name="T">The type of the observable.</typeparam>
-        ///// <param name="value">The value.</param>
-        ///// <returns>The observable.</returns>
-        //private IObservable<T> Single<T>(T value)
-        //{
-        //    return Observable.Never<T>().StartWith(value);
-        //}
+        /// <summary>
+        /// Returns an observable that returns a single value but does not complete.
+        /// </summary>
+        /// <typeparam name="T">The type of the observable.</typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns>The observable.</returns>
+        private IObservable<BindingValue<T>> Single<T>(T value)
+        {
+            return Observable.Never<BindingValue<T>>().StartWith(value);
+        }
 
         private class Class1 : AvaloniaObject
         {

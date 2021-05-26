@@ -44,15 +44,25 @@ namespace Avalonia.PropertyStore
             IObservable<BindingValue<T>> source,
             BindingPriority priority)
         {
-            if (_localValues is null)
+            if (priority == BindingPriority.LocalValue)
             {
-                _localValues = new LocalValueFrame(this);
-                AddFrame(_localValues);
-            }
+                if (_localValues is null)
+                {
+                    _localValues = new LocalValueFrame(this);
+                    AddFrame(_localValues);
+                }
 
-            var result = _localValues.AddBinding(property, source);
-            ReevaluateEffectiveValue(property);
-            return result;
+                var result = _localValues.AddBinding(property, source);
+                ReevaluateEffectiveValue(property);
+                return result;
+            }
+            else
+            {
+                var entry = new BindingEntry<T>(property, source, priority);
+                AddFrame(entry);
+                ReevaluateEffectiveValue(property);
+                return entry;
+            }
         }
 
         public void SetLocalValue<T>(StyledPropertyBase<T> property, T? value)
@@ -110,6 +120,12 @@ namespace Avalonia.PropertyStore
         public void FrameActivationChanged(IValueFrame frame)
         {
             ReevaluateEffectiveValues();
+        }
+
+        public void RemoveBindingEntry<T>(BindingEntry<T> entry)
+        {
+            _frames.Remove(entry);
+            ReevaluateEffectiveValue(entry.Property);
         }
 
         private void AddFrame(IValueFrame frame)

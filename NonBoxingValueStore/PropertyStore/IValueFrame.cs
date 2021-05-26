@@ -4,7 +4,7 @@ using Avalonia.Data;
 namespace Avalonia.PropertyStore
 {
     /// <summary>
-    /// Represents a collection of property values in a <see cref="ValueStore"/>.
+    /// Represents a collection of property values in a <see cref="PropertyStore.ValueStore"/>.
     /// </summary>
     /// <remarks>
     /// A value frame is an abstraction over the following sources of values in an

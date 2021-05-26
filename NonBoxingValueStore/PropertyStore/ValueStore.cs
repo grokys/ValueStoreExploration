@@ -37,15 +37,25 @@ namespace Avalonia.PropertyStore
             IObservable<BindingValue<T>> source,
             BindingPriority priority)
         {
-            if (_localValues is null)
+            if (priority == BindingPriority.LocalValue)
             {
-                _localValues = new LocalValueFrame(this);
-                AddFrame(_localValues);
-            }
+                if (_localValues is null)
+                {
+                    _localValues = new LocalValueFrame(this);
+                    AddFrame(_localValues);
+                }
 
-            var result = _localValues.AddBinding(property, source);
-            ReevaluateEffectiveValue(property);
-            return result;
+                var result = _localValues.AddBinding(property, source);
+                ReevaluateEffectiveValue(property);
+                return result;
+            }
+            else
+            {
+                var entry = new BindingEntry<T>(property, source, priority);
+                AddFrame(entry);
+                ReevaluateEffectiveValue(property);
+                return entry;
+            }
         }
 
         public void ClearLocalValue<T>(StyledPropertyBase<T> property)
@@ -143,9 +153,15 @@ namespace Avalonia.PropertyStore
             ReevaluateEffectiveValues();
         }
 
+        public void RemoveBindingEntry<T>(BindingEntry<T> entry)
+        {
+            _frames.Remove(entry);
+            ReevaluateEffectiveValue(entry.Property);
+        }
+
         private void AddFrame(IValueFrame frame)
         {
-            var index = _frames.BinarySearch(frame, FrameComparer.Instance);
+            var index = _frames.BinarySearch(frame, FrameInsertionComparer.Instance);
             if (index < 0)
                 index = ~index;
             _frames.Insert(index, frame);
@@ -345,9 +361,9 @@ namespace Avalonia.PropertyStore
             }
         }
 
-        private class FrameComparer : IComparer<IValueFrame>
+        private class FrameInsertionComparer : IComparer<IValueFrame>
         {
-            public static readonly FrameComparer Instance = new FrameComparer();
+            public static readonly FrameInsertionComparer Instance = new FrameInsertionComparer();
             public int Compare(IValueFrame? x, IValueFrame? y)
             {
                 var result = y!.Priority - x!.Priority;
