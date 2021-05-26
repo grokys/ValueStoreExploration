@@ -74,12 +74,14 @@ namespace Avalonia
             BindingValue<T> newValue,
             BindingPriority priority = BindingPriority.LocalValue)
         {
-            OnPropertyChanged(new AvaloniaPropertyChangedEventArgs<T>(
+            var e = AvaloniaPropertyChangedEventArgsPool<T>.Get(
                 this,
                 property,
                 oldValue,
                 newValue,
-                priority));
+                priority);
+            OnPropertyChanged(e);
+            AvaloniaPropertyChangedEventArgsPool<T>.Release(e);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Avalonia
         /// Gets the <see cref="AvaloniaObject"/> that the property changed on.
         /// </summary>
         /// <value>The sender object.</value>
-        public IAvaloniaObject Sender { get; }
+        public IAvaloniaObject Sender { get; private protected set; }
 
         /// <summary>
         /// Gets the property that changed.
@@ -49,7 +49,7 @@ namespace Avalonia
         /// <value>
         /// The priority of the new value.
         /// </value>
-        public BindingPriority Priority { get; private set; }
+        public BindingPriority Priority { get; private protected set; }
 
         /// <summary>
         /// Gets a value indicating whether the change represents a change to the effective value of
@@ -62,7 +62,7 @@ namespace Avalonia
         /// priority is present or not. When this property is false, the change that is being signalled
         /// has not resulted in a change to the property value on the object.
         /// </remarks>
-        public bool IsEffectiveValueChange { get; private set; }
+        public bool IsEffectiveValueChange { get; private protected set; }
 
         internal void MarkNonEffectiveValue() => IsEffectiveValueChange = false;
         protected abstract AvaloniaProperty GetProperty();

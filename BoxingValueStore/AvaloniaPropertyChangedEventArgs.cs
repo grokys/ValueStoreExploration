@@ -29,7 +29,7 @@ namespace Avalonia
         /// Gets the <see cref="AvaloniaObject"/> that the property changed on.
         /// </summary>
         /// <value>The sender object.</value>
-        public IAvaloniaObject Sender { get; }
+        public IAvaloniaObject Sender { get; private set; }
 
         /// <summary>
         /// Gets the property that changed.
@@ -37,17 +37,17 @@ namespace Avalonia
         /// <value>
         /// The property that changed.
         /// </value>
-        public AvaloniaProperty Property { get; }
+        public AvaloniaProperty Property { get; private set; }
 
         /// <summary>
         /// Gets the old value of the property.
         /// </summary>
-        public object? OldValue { get; }
+        public object? OldValue { get; private set; }
 
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public object? NewValue { get; }
+        public object? NewValue { get; private set; }
 
         /// <summary>
         /// Gets the priority of the binding that produced the value.
@@ -71,5 +71,28 @@ namespace Avalonia
         public bool IsEffectiveValueChange { get; private set; }
 
         internal void MarkNonEffectiveValue() => IsEffectiveValueChange = false;
+
+
+        internal void Initialize(
+            IAvaloniaObject sender,
+            AvaloniaProperty property,
+            object? oldValue,
+            object? newValue,
+            BindingPriority priority)
+        {
+            Sender = sender;
+            Property = property;
+            OldValue = oldValue;
+            NewValue = newValue;
+            Priority = priority;
+            IsEffectiveValueChange = true;
+        }
+
+        internal void Recycle()
+        {
+            Sender = null!;
+            Property = null!;
+            NewValue = OldValue = null;
+        }
     }
 }

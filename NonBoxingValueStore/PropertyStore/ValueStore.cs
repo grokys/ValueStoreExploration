@@ -229,8 +229,8 @@ namespace Avalonia.PropertyStore
 
         private void ReevaluateEffectiveValues()
         {
-            var newValues = new Dictionary<int, IValue>();
-            var priorities = new Dictionary<int, BindingPriority>();
+            var newValues = DictionaryPool<int, IValue>.Get();
+            var priorities = DictionaryPool<int, BindingPriority>.Get();
 
             for (var i = _frames.Count - 1; i >= 0; --i)
             {
@@ -282,6 +282,8 @@ namespace Avalonia.PropertyStore
                 oldValues?.Remove(id);
             }
 
+            DictionaryPool<int, BindingPriority>.Release(priorities);
+
             if (oldValues is object)
             {
                 foreach (var (id, oldValueEntry) in oldValues)
@@ -300,6 +302,8 @@ namespace Avalonia.PropertyStore
                         // TODO: Log error. Non-registered property changed.
                     }
                 }
+
+                DictionaryPool<int, IValue>.Release(oldValues);
             }
         }
 

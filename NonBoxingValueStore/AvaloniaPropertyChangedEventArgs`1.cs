@@ -36,7 +36,7 @@ namespace Avalonia
         /// <value>
         /// The property that changed.
         /// </value>
-        public new AvaloniaProperty<T> Property { get; }
+        public new AvaloniaProperty<T> Property { get; private set; }
 
         /// <summary>
         /// Gets the old value of the property.
@@ -60,13 +60,36 @@ namespace Avalonia
         /// </remarks>
         public new BindingValue<T> NewValue { get; private set; }
 
-        internal void SetOldValue(Optional<T> value) => OldValue = value;
-        internal void SetNewValue(BindingValue<T> value) => NewValue = value;
-
         protected override AvaloniaProperty GetProperty() => Property;
 
         protected override object? GetOldValue() => OldValue.GetValueOrDefault(AvaloniaProperty.UnsetValue);
 
         protected override object? GetNewValue() => NewValue.GetValueOrDefault(AvaloniaProperty.UnsetValue);
+
+        internal void Initialize(
+            IAvaloniaObject sender,
+            AvaloniaProperty<T> property,
+            Optional<T> oldValue,
+            BindingValue<T> newValue,
+            BindingPriority priority)
+        {
+            Sender = sender;
+            Property = property;
+            OldValue = oldValue;
+            NewValue = newValue;
+            Priority = priority;
+            IsEffectiveValueChange = true;
+        }
+
+        internal void Recycle()
+        {
+            Sender = null!;
+            Property = null!;
+            NewValue = default;
+            OldValue = default;
+        }
+
+        internal void SetOldValue(Optional<T> value) => OldValue = value;
+        internal void SetNewValue(BindingValue<T> value) => NewValue = value;
     }
 }
