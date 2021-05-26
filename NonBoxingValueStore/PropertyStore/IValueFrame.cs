@@ -31,6 +31,6 @@ namespace Avalonia.PropertyStore
         /// </summary>
         IList<IValue> Values { get; }
 
-        void SetOwner(ValueStore? store);
+        void SetOwner(ValueStore? owner);
     }
 }

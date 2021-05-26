@@ -8,13 +8,14 @@ namespace Avalonia.PropertyStore
 {
     internal class ValueStore
     {
-        private readonly AvaloniaObject _owner;
         private int _applyingStyles;
         private readonly List<IValueFrame> _frames = new List<IValueFrame>();
         private LocalValueFrame? _localValues;
         private Dictionary<int, object?>? _effectiveValues;
 
-        public ValueStore(AvaloniaObject owner) => _owner = owner;
+        public ValueStore(AvaloniaObject owner) => Owner = owner;
+
+        public AvaloniaObject Owner { get; }
 
         public void BeginStyling() => ++_applyingStyles;
 
@@ -243,7 +244,7 @@ namespace Avalonia.PropertyStore
 
         private object? GetDefaultValue(AvaloniaProperty property)
         {
-            return ((IStyledPropertyAccessor)property).GetDefaultValue(_owner.GetType());
+            return ((IStyledPropertyAccessor)property).GetDefaultValue(Owner.GetType());
         }
 
         private void RaisePropertyChanged(
@@ -254,7 +255,7 @@ namespace Avalonia.PropertyStore
         {
             if (!Equals(oldValue, newValue))
             {
-                _owner.RaisePropertyChanged(property, oldValue, newValue, priority);
+                Owner.RaisePropertyChanged(property, oldValue, newValue, priority);
             }
         }
 

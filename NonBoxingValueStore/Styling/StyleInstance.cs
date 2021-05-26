@@ -41,7 +41,13 @@ namespace Avalonia.Styling
 
         public override BindingPriority Priority { get; }
 
-        public override void SetOwner(ValueStore? store) => _valueStore = store;
+        public override void SetOwner(ValueStore? owner)
+        {
+            _valueStore = owner;
+
+            foreach (var value in Values)
+                (value as SetterBindingInstance)?.SetOwner(owner);
+        }
 
         void IStyleActivatorSink.OnNext(bool value, int tag)
         {

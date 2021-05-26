@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Styling;
+using Avalonia.Tests;
 using Xunit;
 
 namespace Avalonia.Base.UnitTests
@@ -8,12 +12,26 @@ namespace Avalonia.Base.UnitTests
     public class AvaloniaObjectTests_Styling
     {
         [Fact]
-        public void Applies_Style_With_Untyped_Setter()
+        public void Applies_Style_With_Untyped_Property_Setter()
         {
             var target = new Class1();
             var style = new Style(x => x.OfType<Class1>())
             {
                 Setters = { new Setter(Class1.FooProperty, "foo") }
+            };
+
+            ApplyStyles(target, style);
+
+            Assert.Equal("foo", target.Foo);
+        }
+
+        [Fact]
+        public void Applies_Style_With_Binding()
+        {
+            var target = new Class1();
+            var style = new Style(x => x.OfType<Class1>())
+            {
+                Setters = { new Setter(Class1.FooProperty, new TestBinding("foo")) }
             };
 
             ApplyStyles(target, style);
@@ -112,7 +130,44 @@ namespace Avalonia.Base.UnitTests
         }
 
         [Fact]
-        public void Raises_PropertyChanged_For_Style_Activation_Changes_1()
+        public void Raises_PropertyChanged_On_Call_To_EndStyling()
+        {
+            var styles = new[]
+            {
+                new Style(x => x.OfType<Class1>().Class("foo"))
+                {
+                    Setters = { new Setter(Class1.FooProperty, "Foo") },
+                },
+
+                new Style(x => x.OfType<Class1>().Class("bar"))
+                {
+                    Setters = { new Setter(Class1.FooProperty, "Bar") },
+                }
+            };
+
+            var target = new Class1();
+            var raised = 0;
+
+            target.PropertyChanged += (s, e) =>
+            {
+                ++raised;
+            };
+
+            var stylable = (IStyleable)target;
+            stylable.BeginStyling();
+            
+            foreach (var style in styles)
+                stylable.ApplyStyle(style);
+
+            Assert.Equal(0, raised);
+
+            stylable.EndStyling();
+
+            Assert.Equal(0, raised);
+        }
+
+        [Fact]
+        public void Raises_PropertyChanged_For_Style_Activation_Changes()
         {
             var styles = new[]
             {
@@ -164,6 +219,37 @@ namespace Avalonia.Base.UnitTests
             {
                 get => GetValue(FooProperty);
                 set => SetValue(FooProperty, value);
+            }
+        }
+
+        internal class TestBinding : IBinding, IObservable<object?>
+        {
+            private List<IObserver<object?>> _observers = new();
+            private object? _value;
+
+            public TestBinding(object? initialValue) => _value = initialValue;
+
+            public int InstanceCount { get; private set; }
+            public int ObserverCount => _observers.Count;
+
+            public InstancedBinding Initiate(IAvaloniaObject target, AvaloniaProperty targetProperty)
+            {
+                ++InstanceCount;
+                return new InstancedBinding(this, BindingMode.OneWay, BindingPriority.LocalValue);
+            }
+
+            public void OnNext(object? value)
+            {
+                _value = value;
+                foreach (var observer in _observers)
+                    observer.OnNext(value);
+            }
+
+            public IDisposable Subscribe(IObserver<object?> observer)
+            {
+                _observers.Add(observer);
+                observer.OnNext(_value);
+                return Disposable.Create(() => _observers.Remove(observer));
             }
         }
     }

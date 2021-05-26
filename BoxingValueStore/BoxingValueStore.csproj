@@ -21,6 +21,7 @@
     <Compile Include="..\NonBoxingValueStore\PropertyStore\IValue.cs" Link="PropertyStore\IValue.cs" />
     <Compile Include="..\NonBoxingValueStore\PropertyStore\IValueFrame.cs" Link="PropertyStore\IValueFrame.cs" />
     <Compile Include="..\NonBoxingValueStore\Styling\Setter.cs" Link="Styling\Setter.cs" />
+    <Compile Include="..\NonBoxingValueStore\Styling\SetterBindingInstance.cs" Link="Styling\SetterBindingInstance.cs" />
     <Compile Include="..\NonBoxingValueStore\Styling\Style.cs" Link="Styling\Style.cs" />
     <Compile Include="..\NonBoxingValueStore\Styling\StyleInstance.cs" Link="Styling\StyleInstance.cs" />
   </ItemGroup>

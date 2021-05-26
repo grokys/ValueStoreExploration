@@ -12,7 +12,7 @@ namespace Avalonia.PropertyStore
         public abstract BindingPriority Priority { get; }
         public IList<IValue> Values => _values.Values;
 
-        public virtual void SetOwner(ValueStore? store)
+        public virtual void SetOwner(ValueStore? owner)
         {
         }
 
