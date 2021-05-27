@@ -59,6 +59,32 @@ namespace Avalonia.PropertyStore
             }
         }
 
+        public IDisposable AddBinding<T>(
+            StyledPropertyBase<T> property,
+            IObservable<T?> source,
+            BindingPriority priority)
+        {
+            if (priority == BindingPriority.LocalValue)
+            {
+                if (_localValues is null)
+                {
+                    _localValues = new LocalValueFrame(this);
+                    AddFrame(_localValues);
+                }
+
+                // LocalValue bindings are subscribed immediately in LocalValueEntry so no need to
+                // re-evaluate the effective value here.
+                return _localValues.AddBinding(property, source);
+            }
+            else
+            {
+                var entry = new BindingEntry<T>(property, source, priority);
+                AddFrame(entry);
+                ReevaluateEffectiveValue(property);
+                return entry;
+            }
+        }
+
         public void ClearLocalValue<T>(StyledPropertyBase<T> property)
         {
             _localValues?.ClearValue(property);

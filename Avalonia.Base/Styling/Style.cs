@@ -13,9 +13,9 @@ namespace Avalonia.Styling
         {
         }
 
-        public Style(Func<Selector?, Selector> selector)
+        public Style(Func<Selector, Selector> selector)
         {
-            Selector = selector(null);
+            Selector = selector(null!);
         }
 
         public Selector? Selector { get; }

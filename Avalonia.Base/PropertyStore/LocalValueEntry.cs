@@ -4,7 +4,10 @@ using Avalonia.Data;
 
 namespace Avalonia.PropertyStore
 {
-    internal class LocalValueEntry<T> : IValue<T>, IObserver<BindingValue<T>>, IDisposable
+    internal class LocalValueEntry<T> : IValue<T>,
+        IObserver<BindingValue<T>>,
+        IObserver<T?>,
+        IDisposable
     {
         private readonly LocalValueFrame _owner;
         private IDisposable? _bindingSubscription;
@@ -22,6 +25,13 @@ namespace Avalonia.PropertyStore
         AvaloniaProperty IValue.Property => Property;
 
         public IDisposable AddBinding(IObservable<BindingValue<T>> source)
+        {
+            _bindingSubscription?.Dispose();
+            _bindingSubscription = source.Subscribe(this);
+            return this;
+        }
+
+        public IDisposable AddBinding(IObservable<T?> source)
         {
             _bindingSubscription?.Dispose();
             _bindingSubscription = source.Subscribe(this);
@@ -71,8 +81,9 @@ namespace Avalonia.PropertyStore
             return _hasValue;
         }
 
-        void IObserver<BindingValue<T>>.OnCompleted() => BindingCompleted();
-        void IObserver<BindingValue<T>>.OnError(Exception error) => BindingCompleted();
+        public void OnCompleted() => BindingCompleted();
+        public void OnError(Exception error) => BindingCompleted();
+        void IObserver<T?>.OnNext(T? value) => SetValue(value);
 
         void IObserver<BindingValue<T>>.OnNext(BindingValue<T> value)
         {
@@ -81,6 +92,7 @@ namespace Avalonia.PropertyStore
             else if (value.Type == BindingValueType.BindingError)
                 ClearValue();
         }
+
 
         private void BindingCompleted()
         {

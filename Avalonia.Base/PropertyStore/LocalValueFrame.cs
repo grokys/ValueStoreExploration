@@ -28,6 +28,20 @@ namespace Avalonia.PropertyStore
             return e.AddBinding(source);
         }
 
+        public IDisposable AddBinding<T>(
+            StyledPropertyBase<T> property,
+            IObservable<T?> source)
+        {
+            if (TryGet(property, out var entry))
+            {
+                return ((LocalValueEntry<T>)entry).AddBinding(source);
+            }
+
+            var e = new LocalValueEntry<T>(this, property);
+            Add(e);
+            return e.AddBinding(source);
+        }
+
         public void ClearValue<T>(StyledPropertyBase<T> property)
         {
             if (TryGet(property, out var entry))

@@ -31,6 +31,14 @@ namespace Avalonia
             return _values.AddBinding(property, source, priority);
         }
 
+        public IDisposable Bind<T>(
+            StyledPropertyBase<T> property,
+            IObservable<T?> source,
+            BindingPriority priority = BindingPriority.LocalValue)
+        {
+            return _values.AddBinding(property, source, priority);
+        }
+
         public void ClearValue<T>(StyledPropertyBase<T> property) => _values.ClearLocalValue(property);
 
         public void CoerceValue<T>(StyledPropertyBase<T> property)

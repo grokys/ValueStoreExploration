@@ -9,10 +9,11 @@ namespace Avalonia.PropertyStore
     internal class BindingEntry<T> : IValue<T>,
         IValueFrame, 
         IObserver<BindingValue<T>>,
+        IObserver<T?>,
         IList<IValue>,
         IDisposable
     {
-        private readonly IObservable<BindingValue<T>> _source;
+        private readonly object _source;
         private IDisposable? _bindingSubscription;
         private ValueStore? _owner;
         private bool _hasValue;
@@ -21,6 +22,16 @@ namespace Avalonia.PropertyStore
         public BindingEntry(
             StyledPropertyBase<T> property,
             IObservable<BindingValue<T>> source,
+            BindingPriority priority)
+        {
+            _source = source;
+            Property = property;
+            Priority = priority;
+        }
+
+        public BindingEntry(
+            StyledPropertyBase<T> property,
+            IObservable<T> source,
             BindingPriority priority)
         {
             _source = source;
@@ -73,6 +84,10 @@ namespace Avalonia.PropertyStore
             return _hasValue;
         }
 
+        public void OnCompleted() => BindingCompleted();
+        public void OnError(Exception error) => BindingCompleted();
+        void IObserver<T?>.OnNext(T? value) => SetValue(value);
+
         int IList<IValue>.IndexOf(IValue item) => throw new NotImplementedException();
         void IList<IValue>.Insert(int index, IValue item) => throw new NotImplementedException();
         void IList<IValue>.RemoveAt(int index) => throw new NotImplementedException();
@@ -83,8 +98,6 @@ namespace Avalonia.PropertyStore
         bool ICollection<IValue>.Remove(IValue item) => throw new NotImplementedException();
         IEnumerator<IValue> IEnumerable<IValue>.GetEnumerator() => throw new NotImplementedException();
         IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
-        void IObserver<BindingValue<T>>.OnCompleted() => BindingCompleted();
-        void IObserver<BindingValue<T>>.OnError(Exception error) => BindingCompleted();
 
         void IObserver<BindingValue<T>>.OnNext(BindingValue<T> value)
         {
@@ -123,10 +136,14 @@ namespace Avalonia.PropertyStore
         {
             if (_bindingSubscription is null)
             {
-                // Prevent re-entrancy by first assigning the subscription to a dummy
+                // Prevent reentrancy by first assigning the subscription to a dummy
                 // non-null value.
                 _bindingSubscription = Disposable.Empty;
-                _bindingSubscription = _source.Subscribe(this);
+
+                if (_source is IObservable<BindingValue<T>> b)
+                    _bindingSubscription = b.Subscribe(this);
+                else
+                    _bindingSubscription = ((IObservable<T>)_source).Subscribe(this);
             }
         }
 

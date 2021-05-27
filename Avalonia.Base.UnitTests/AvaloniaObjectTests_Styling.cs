@@ -4,7 +4,6 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Styling;
-using Avalonia.Tests;
 using Xunit;
 
 namespace Avalonia.Base.UnitTests

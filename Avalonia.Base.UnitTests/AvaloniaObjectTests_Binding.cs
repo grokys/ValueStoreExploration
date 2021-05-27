@@ -399,18 +399,18 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("foo", target.GetValue(Class2.BarProperty));
         }
 
-        //[Fact]
-        //public void Bind_Sets_Subsequent_Value()
-        //{
-        //    Class1 target = new Class1();
-        //    Class1 source = new Class1();
+        [Fact]
+        public void Bind_Sets_Subsequent_Value()
+        {
+            Class1 target = new Class1();
+            Class1 source = new Class1();
 
-        //    source.SetValue(Class1.FooProperty, "initial");
-        //    target.Bind(Class1.FooProperty, source.GetObservable(Class1.FooProperty));
-        //    source.SetValue(Class1.FooProperty, "subsequent");
+            source.SetValue(Class1.FooProperty, "initial");
+            target.Bind(Class1.FooProperty, source.GetObservable(Class1.FooProperty));
+            source.SetValue(Class1.FooProperty, "subsequent");
 
-        //    Assert.Equal("subsequent", target.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("subsequent", target.GetValue(Class1.FooProperty));
+        }
 
         //[Fact]
         //public void Bind_Ignores_Invalid_Value_Type()
@@ -436,36 +436,36 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal(0, source.Subscriptions[0].Unsubscribe);
         }
 
-        //[Fact]
-        //public void Two_Way_Separate_Binding_Works()
-        //{
-        //    Class1 obj1 = new Class1();
-        //    Class1 obj2 = new Class1();
+        [Fact]
+        public void Two_Way_Separate_Binding_Works()
+        {
+            Class1 obj1 = new Class1();
+            Class1 obj2 = new Class1();
 
-        //    obj1.SetValue(Class1.FooProperty, "initial1");
-        //    obj2.SetValue(Class1.FooProperty, "initial2");
+            obj1.SetValue(Class1.FooProperty, "initial1");
+            obj2.SetValue(Class1.FooProperty, "initial2");
 
-        //    obj1.Bind(Class1.FooProperty, obj2.GetObservable(Class1.FooProperty));
-        //    obj2.Bind(Class1.FooProperty, obj1.GetObservable(Class1.FooProperty));
+            obj1.Bind(Class1.FooProperty, obj2.GetObservable(Class1.FooProperty));
+            obj2.Bind(Class1.FooProperty, obj1.GetObservable(Class1.FooProperty));
 
-        //    Assert.Equal("initial2", obj1.GetValue(Class1.FooProperty));
-        //    Assert.Equal("initial2", obj2.GetValue(Class1.FooProperty));
+            Assert.Equal("initial2", obj1.GetValue(Class1.FooProperty));
+            Assert.Equal("initial2", obj2.GetValue(Class1.FooProperty));
 
-        //    obj1.SetValue(Class1.FooProperty, "first");
+            obj1.SetValue(Class1.FooProperty, "first");
 
-        //    Assert.Equal("first", obj1.GetValue(Class1.FooProperty));
-        //    Assert.Equal("first", obj2.GetValue(Class1.FooProperty));
+            Assert.Equal("first", obj1.GetValue(Class1.FooProperty));
+            Assert.Equal("first", obj2.GetValue(Class1.FooProperty));
 
-        //    obj2.SetValue(Class1.FooProperty, "second");
+            obj2.SetValue(Class1.FooProperty, "second");
 
-        //    Assert.Equal("second", obj1.GetValue(Class1.FooProperty));
-        //    Assert.Equal("second", obj2.GetValue(Class1.FooProperty));
+            Assert.Equal("second", obj1.GetValue(Class1.FooProperty));
+            Assert.Equal("second", obj2.GetValue(Class1.FooProperty));
 
-        //    obj1.SetValue(Class1.FooProperty, "third");
+            obj1.SetValue(Class1.FooProperty, "third");
 
-        //    Assert.Equal("third", obj1.GetValue(Class1.FooProperty));
-        //    Assert.Equal("third", obj2.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("third", obj1.GetValue(Class1.FooProperty));
+            Assert.Equal("third", obj2.GetValue(Class1.FooProperty));
+        }
 
         //[Fact]
         //public void Two_Way_Binding_With_Priority_Works()

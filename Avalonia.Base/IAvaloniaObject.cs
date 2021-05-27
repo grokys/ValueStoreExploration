@@ -81,6 +81,21 @@ namespace Avalonia
             BindingPriority priority = BindingPriority.LocalValue);
 
         /// <summary>
+        /// Binds a <see cref="AvaloniaProperty"/> to an observable.
+        /// </summary>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="source">The observable.</param>
+        /// <param name="priority">The priority of the binding.</param>
+        /// <returns>
+        /// A disposable which can be used to terminate the binding.
+        /// </returns>
+        IDisposable Bind<T>(
+            StyledPropertyBase<T> property,
+            IObservable<T?> source,
+            BindingPriority priority = BindingPriority.LocalValue);
+
+        /// <summary>
         /// Coerces the specified <see cref="AvaloniaProperty"/>.
         /// </summary>
         /// <typeparam name="T">The type of the property.</typeparam>
