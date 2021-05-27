@@ -60,6 +60,11 @@ namespace Avalonia.PropertyStore
 
         public void SetValue(T? value)
         {
+            if (Property.ValidateValue?.Invoke(value) == false)
+            {
+                value = Property.GetDefaultValue(_owner.ValueStore.Owner.GetType());
+            }
+
             if (!_hasValue || !EqualityComparer<T>.Default.Equals(_value, value))
             {
                 var oldValue = _hasValue ? new Optional<T>(_value) : default;

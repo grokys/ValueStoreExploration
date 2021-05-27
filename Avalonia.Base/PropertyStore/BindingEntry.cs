@@ -109,26 +109,35 @@ namespace Avalonia.PropertyStore
 
         private void ClearValue()
         {
+            _ = _owner ?? throw new AvaloniaInternalException("BindingEntry has no owner.");
+
             var oldValue = _hasValue ? new Optional<T>(_value) : default;
 
             if (_bindingSubscription is null)
-                _owner?.RemoveBindingEntry(this, oldValue);
+                _owner.RemoveBindingEntry(this, oldValue);
             else if (_hasValue)
             {
                 _hasValue = false;
                 _value = default;
-                _owner?.ValueChanged(this, Property, oldValue);
+                _owner.ValueChanged(this, Property, oldValue);
             }
         }
 
         private void SetValue(T? value)
         {
+            _ = _owner ?? throw new AvaloniaInternalException("BindingEntry has no owner.");
+
+            if (Property.ValidateValue?.Invoke(value) == false)
+            {
+                value = Property.GetDefaultValue(_owner.Owner.GetType());
+            }
+
             if (!_hasValue || !EqualityComparer<T>.Default.Equals(_value, value))
             {
                 var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _value = value;
                 _hasValue = true;
-                _owner?.ValueChanged(this, Property, oldValue);
+                _owner.ValueChanged(this, Property, oldValue);
             }
         }
 

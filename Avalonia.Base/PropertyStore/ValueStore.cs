@@ -92,6 +92,11 @@ namespace Avalonia.PropertyStore
 
         public void SetLocalValue<T>(StyledPropertyBase<T> property, T? value)
         {
+            if (property.ValidateValue?.Invoke(value) == false)
+            {
+                throw new ArgumentException($"{value} is not a valid value for '{property.Name}.");
+            }
+
             if (_localValues is null)
             {
                 _localValues = new LocalValueFrame(this);

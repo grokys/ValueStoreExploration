@@ -68,7 +68,7 @@ namespace Avalonia
         /// <summary>
         /// Gets the value validation callback for the property.
         /// </summary>
-        public Func<TValue, bool> ValidateValue { get; }
+        public Func<TValue?, bool> ValidateValue { get; }
 
         /// <summary>
         /// Gets a value indicating whether this property has any value coercion callbacks defined
