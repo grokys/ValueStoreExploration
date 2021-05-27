@@ -10,7 +10,7 @@ namespace Avalonia.PropertyStore
         private int _applyingStyles;
         private readonly List<IValueFrame> _frames = new List<IValueFrame>();
         private LocalValueFrame? _localValues;
-        private Dictionary<int, IValue>? _effectiveValues;
+        private Dictionary<int, EffectiveValue>? _effectiveValues;
 
         public ValueStore(AvaloniaObject owner) => Owner = owner;
 
@@ -108,41 +108,9 @@ namespace Avalonia.PropertyStore
 
         public T? GetValue<T>(StyledPropertyBase<T> property)
         {
-            if (TryGetValue(property, out var value))
-                return value;
+            if (_effectiveValues is object && _effectiveValues.TryGetValue(property.Id, out var value))
+                return value.GetValue<T>();
             return property.GetDefaultValue(Owner.GetType());
-        }
-
-        public bool TryGetValue(AvaloniaProperty property, out object? result)
-        {
-            if (_effectiveValues is object &&
-                _effectiveValues.TryGetValue(property.Id, out var value))
-            {
-                return value.TryGetValue(out result);
-            }
-
-            result = default;
-            return false;
-        }
-
-        public bool TryGetValue<T>(StyledPropertyBase<T> property, out T? result)
-        {
-            if (_effectiveValues is object &&
-                _effectiveValues.TryGetValue(property.Id, out var value))
-            {
-                if (value is IValue<T> typed)
-                {
-                    return typed.TryGetValue(out result); 
-                }
-                else if (value.TryGetValue(out var untyped))
-                {
-                    result = (T?)untyped;
-                    return true;
-                }
-            }
-
-            result = default;
-            return false;
         }
 
         public bool IsAnimating(AvaloniaProperty property)
@@ -181,7 +149,7 @@ namespace Avalonia.PropertyStore
         public void ValueChanged<T>(
             IValueFrame frame,
             StyledPropertyBase<T> property,
-            Optional<T> oldValue)
+            in Optional<T> oldValue)
         {
             ReevaluateEffectiveValue(property, oldValue);
         }
@@ -191,7 +159,7 @@ namespace Avalonia.PropertyStore
             ReevaluateEffectiveValues();
         }
 
-        public void RemoveBindingEntry<T>(BindingEntry<T> entry, Optional<T> oldValue)
+        public void RemoveBindingEntry<T>(BindingEntry<T> entry, in Optional<T> oldValue)
         {
             _frames.Remove(entry);
             ReevaluateEffectiveValue(entry.Property, oldValue);
@@ -211,40 +179,29 @@ namespace Avalonia.PropertyStore
             var newValue = AvaloniaProperty.UnsetValue;
 
             if (EvaluateEffectiveValue(property, out var value, out var priority))
-            {
-                _effectiveValues ??= new Dictionary<int, IValue>();
-                _effectiveValues[property.Id] = value;
-                value.TryGetValue(out newValue);
-            }
+                newValue = SetEffectiveValue(property, value);
             else if (_effectiveValues is object)
-            {
                 _effectiveValues.Remove(property.Id);
-            }
 
             RaisePropertyChanged(property, oldValue, newValue, priority);
         }
 
         private void ReevaluateEffectiveValue<T>(StyledPropertyBase<T> property)
         {
-            var oldValue = TryGetValue(property, out var value) ? new Optional<T>(value) : default;
-            ReevaluateEffectiveValue(property, oldValue);
+            if (_effectiveValues is object && _effectiveValues.TryGetValue(property.Id, out var value))
+                ReevaluateEffectiveValue(property, value.GetValue<T>());
+            else
+                ReevaluateEffectiveValue(property, default);
         }
 
-        private void ReevaluateEffectiveValue<T>(StyledPropertyBase<T> property, Optional<T> oldValue)
+        private void ReevaluateEffectiveValue<T>(StyledPropertyBase<T> property, in Optional<T> oldValue)
         {
             Optional<T> newValue = default;
 
             if (EvaluateEffectiveValue(property, out var value, out var priority))
-            {
-                _effectiveValues ??= new Dictionary<int, IValue>();
-                _effectiveValues[property.Id] = value;
-                if (((IValue<T>)value).TryGetValue(out var v))
-                    newValue = v;
-            }
+                newValue = SetEffectiveValue(property, value);
             else if (_effectiveValues is object)
-            {
                 _effectiveValues.Remove(property.Id);
-            }
 
             RaisePropertyChanged(property, oldValue, newValue, priority);
         }
@@ -283,7 +240,7 @@ namespace Avalonia.PropertyStore
 
         private void ReevaluateEffectiveValues()
         {
-            var newValues = DictionaryPool<int, IValue>.Get();
+            var newValues = DictionaryPool<int, EffectiveValue>.Get();
             var priorities = DictionaryPool<int, BindingPriority>.Get();
 
             for (var i = _frames.Count - 1; i >= 0; --i)
@@ -301,7 +258,7 @@ namespace Avalonia.PropertyStore
 
                     if (!newValues.ContainsKey(value.Property.Id) && value.HasValue)
                     {
-                        newValues.Add(value.Property.Id, value);
+                        newValues.Add(value.Property.Id, new(value));
                         priorities.Add(value.Property.Id, frame.Priority);
                     }
                 }
@@ -317,13 +274,11 @@ namespace Avalonia.PropertyStore
 
                 if (property is object)
                 {
-                    IValue? oldValueEntry = null;
                     object? oldValue = AvaloniaProperty.UnsetValue;
-                    object? newValue = AvaloniaProperty.UnsetValue;
+                    object? newValue = newValueEntry.GetValue();
 
-                    oldValues?.TryGetValue(id, out oldValueEntry);
-                    oldValueEntry?.TryGetValue(out oldValue);
-                    newValueEntry?.TryGetValue(out newValue);
+                    if (oldValues is object && oldValues.TryGetValue(id, out var oldValueEntry))
+                        oldValue = oldValueEntry.GetValue();
 
                     RaisePropertyChanged(property, oldValue, newValue, priorities[id]);
                 }
@@ -346,8 +301,7 @@ namespace Avalonia.PropertyStore
                     if (property is object)
                     {
                         var newValue = AvaloniaProperty.UnsetValue;
-                        var oldValue = AvaloniaProperty.UnsetValue;
-                        oldValueEntry?.TryGetValue(out oldValue);
+                        var oldValue = oldValueEntry.GetValue();
                         RaisePropertyChanged(property, oldValue, newValue, BindingPriority.Unset);
                     }
                     else
@@ -356,8 +310,24 @@ namespace Avalonia.PropertyStore
                     }
                 }
 
-                DictionaryPool<int, IValue>.Release(oldValues);
+                DictionaryPool<int, EffectiveValue>.Release(oldValues);
             }
+        }
+
+        private object? SetEffectiveValue(AvaloniaProperty property, IValue value)
+        {
+            _effectiveValues ??= new();
+            _effectiveValues[property.Id] = new(value);
+            value.TryGetValue(out var result);
+            return result;
+        }
+
+        private T? SetEffectiveValue<T>(StyledPropertyBase<T> property, IValue value)
+        {
+            _effectiveValues ??= new();
+            _effectiveValues[property.Id] = new(value);
+            ((IValue<T>)value).TryGetValue(out var result);
+            return result;
         }
 
         private object? GetDefaultValue(AvaloniaProperty property)
@@ -396,6 +366,36 @@ namespace Avalonia.PropertyStore
             if (oldValue != newValue)
             {
                 Owner.RaisePropertyChanged(property, oldValue, newValue, priority);
+            }
+        }
+
+        private readonly struct EffectiveValue
+        {
+            public EffectiveValue(IValue value)
+            {
+                Entry = value;
+            }
+
+            public readonly IValue Entry;
+
+            public object? GetValue()
+            {
+                Entry.TryGetValue(out var result);
+                return result;
+            }
+
+            public T? GetValue<T>()
+            {
+                if (Entry is IValue<T> typed)
+                {
+                    typed.TryGetValue(out var result);
+                    return result;
+                }
+                else
+                {
+                    Entry.TryGetValue(out var result);
+                    return (T?)result;
+                }
             }
         }
 
