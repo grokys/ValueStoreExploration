@@ -1,6 +1,8 @@
 using System;
 using System.Reactive.Subjects;
+using Avalonia.Controls;
 using Avalonia.Data;
+using Avalonia.Styling;
 using Xunit;
 
 namespace Avalonia.Base.UnitTests
@@ -35,6 +37,38 @@ namespace Avalonia.Base.UnitTests
 
             target.Bind(Class1.FooProperty, source);
             source.OnNext(150);
+
+            Assert.Equal(100, target.Foo);
+        }
+
+        [Fact]
+        public void Coerces_Style_Value()
+        {
+            var target = new Class1();
+            var style = new Style(x => x.OfType<Class1>())
+            {
+                Setters = { new Setter(Class1.FooProperty, 150 )},
+            };
+
+            ((IStyleable)target).ApplyStyle(style);
+
+            Assert.Equal(100, target.Foo);
+        }
+
+        [Fact]
+        public void Coerces_Triggered_Style_Value()
+        {
+            var target = new Class1();
+            var style = new Style(x => x.OfType<Class1>().Class("foo"))
+            {
+                Setters = { new Setter(Class1.FooProperty, 150) },
+            };
+
+            ((IStyleable)target).ApplyStyle(style);
+            
+            Assert.Equal(11, target.Foo);
+
+            target.Classes.Add("foo");
 
             Assert.Equal(100, target.Foo);
         }
@@ -97,7 +131,48 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal(-150, target.Foo);
         }
 
-        private class Class1 : AvaloniaObject
+        [Fact]
+        public void Coerced_Value_Is_Reported_In_PropertyChanged()
+        {
+            var target = new Class1();
+            var raised = 0;
+
+            target.PropertyChanged += (s, e) =>
+            {
+                if (e.Property == Class1.FooProperty)
+                {
+                    Assert.Equal(100, (int)e.NewValue!);
+                    ++raised;
+                }
+            };
+
+            target.Foo = 150;
+
+            Assert.Equal(1, raised);
+        }
+
+        [Fact]
+        public void Coerced_Value_Is_Reported_In_Binding_PropertyChanged()
+        {
+            var target = new Class1();
+            var source = new BehaviorSubject<BindingValue<int>>(150);
+            var raised = 0;
+
+            target.PropertyChanged += (s, e) =>
+            {
+                if (e.Property == Class1.FooProperty)
+                {
+                    Assert.Equal(100, (int)e.NewValue!);
+                    ++raised;
+                }
+            };
+
+            target.Bind(Class1.FooProperty, source);
+
+            Assert.Equal(1, raised);
+        }
+
+        private class Class1 : Control
         {
             public static readonly StyledProperty<int> FooProperty =
                 AvaloniaProperty.Register<Class1, int>(
