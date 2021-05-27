@@ -46,9 +46,9 @@ namespace Avalonia.PropertyStore
                     AddFrame(_localValues);
                 }
 
-                var result = _localValues.AddBinding(property, source);
-                ReevaluateEffectiveValue(property);
-                return result;
+                // LocalValue bindings are subscribed immediately in LocalValueEntry so no need to
+                // re-evaluate the effective value here.
+                return _localValues.AddBinding(property, source);
             }
             else
             {
