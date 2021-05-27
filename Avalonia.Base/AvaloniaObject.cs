@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using Avalonia.Data;
 using Avalonia.PropertyStore;
+using Avalonia.Reactive;
 
 namespace Avalonia
 {
     public class AvaloniaObject : IAvaloniaObject
     {
         private readonly ValueStore _values;
+        private Dictionary<AvaloniaProperty, object>? _observables;
 
         public AvaloniaObject()
         {
@@ -33,6 +36,20 @@ namespace Avalonia
         public void CoerceValue<T>(StyledPropertyBase<T> property)
         {
             throw new NotImplementedException();
+        }
+
+        public IObservable<T?> GetObservable<T>(StyledPropertyBase<T> property)
+        {
+            _observables ??= new();
+
+            if (_observables.TryGetValue(property, out var o))
+                return (IObservable<T>)o;
+            else
+            {
+                var result = new AvaloniaStyledPropertyObservable<T>(this, property);
+                _observables.Add(property, result);
+                return result;
+            }
         }
 
         public T? GetValue<T>(StyledPropertyBase<T> property)
@@ -79,7 +96,21 @@ namespace Avalonia
                 newValue,
                 priority);
             OnPropertyChanged(e);
-            AvaloniaPropertyChangedEventArgsPool<T>.Release(e);
+
+            if (_observables is object && _observables.TryGetValue(property, out var o))
+            {
+                var value = e.NewValue.Value;
+
+                // Release the event args here so they can be recycled if raising the change on the
+                // observable causes a cascading change.
+                AvaloniaPropertyChangedEventArgsPool<T>.Release(e);
+
+                ((AvaloniaStyledPropertyObservable<T?>)o).OnNext(value);
+            }
+            else
+            {
+                AvaloniaPropertyChangedEventArgsPool<T>.Release(e);
+            }
         }
 
         internal ValueStore UnitTestGetValueStore() => _values;

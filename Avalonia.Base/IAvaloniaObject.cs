@@ -17,6 +17,21 @@ namespace Avalonia
         void ClearValue<T>(StyledPropertyBase<T> property);
 
         /// <summary>
+        /// Gets an observable for a <see cref="AvaloniaProperty"/>.
+        /// </summary>
+        /// <param name="o">The object.</param>
+        /// <typeparam name="T">The property type.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <returns>
+        /// An observable which fires immediately with the current value of the property on the
+        /// object and subsequently each time the property value changes.
+        /// </returns>
+        /// <remarks>
+        /// The subscription to <paramref name="o"/> is created using a weak reference.
+        /// </remarks>
+        IObservable<T?> GetObservable<T>(StyledPropertyBase<T> property);
+
+        /// <summary>
         /// Gets a <see cref="AvaloniaProperty"/> value.
         /// </summary>
         /// <typeparam name="T">The type of the property.</typeparam>
