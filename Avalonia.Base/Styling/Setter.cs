@@ -16,6 +16,7 @@ namespace Avalonia.Styling
             Value = value;
         }
 
+        public bool HasValue => true;
         public AvaloniaProperty? Property { get; set; }
         public object? Value { get; set; }
         AvaloniaProperty IValue.Property => EnsureProperty();

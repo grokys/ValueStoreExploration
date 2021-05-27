@@ -7,6 +7,8 @@ namespace Avalonia.PropertyStore
     /// </summary>
     internal interface IValue
     {
+        bool HasValue { get; }
+
         /// <summary>
         /// Gets the property that this value applies to.
         /// </summary>

@@ -28,6 +28,15 @@ namespace Avalonia.PropertyStore
             Priority = priority;
         }
 
+        public bool HasValue
+        {
+            get
+            {
+                StartIfNecessary();
+                return _hasValue;
+            }
+        }
+        
         public bool IsActive => true;
         public BindingPriority Priority { get; }
         public StyledPropertyBase<T> Property { get; }

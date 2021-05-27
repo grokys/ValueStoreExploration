@@ -124,7 +124,7 @@ namespace Avalonia.PropertyStore
                 for (var j = 0; j < values.Count; ++j)
                 {
                     var value = values[j];
-                    if (value.Property == property && value.TryGetValue(out _))
+                    if (value.Property == property && value.HasValue)
                         return true;
                 }
             }
@@ -229,7 +229,7 @@ namespace Avalonia.PropertyStore
                 {
                     var value = values[j];
 
-                    if (value.Property == property && value.TryGetValue(out _))
+                    if (value.Property == property && value.HasValue)
                     {
                         priority = frame.Priority;
                         result = value;
@@ -261,7 +261,7 @@ namespace Avalonia.PropertyStore
                 {
                     var value = values[j];
 
-                    if (!newValues.ContainsKey(value.Property.Id) && value.TryGetValue(out _))
+                    if (!newValues.ContainsKey(value.Property.Id) && value.HasValue)
                     {
                         newValues.Add(value.Property.Id, value);
                         priorities.Add(value.Property.Id, frame.Priority);

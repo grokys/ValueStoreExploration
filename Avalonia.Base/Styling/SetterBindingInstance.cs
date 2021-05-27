@@ -19,6 +19,15 @@ namespace Avalonia.Styling
             Property = property;
         }
 
+        public bool HasValue
+        {
+            get
+            {
+                StartIfNecessary();
+                return _value != AvaloniaProperty.UnsetValue;
+            }
+        }
+
         public AvaloniaProperty Property { get; }
 
         public bool TryGetValue(out object? value)
@@ -32,12 +41,7 @@ namespace Avalonia.Styling
                 return false;
             }
 
-            if (_instancedBinding is null)
-            {
-                _instancedBinding = _binding.Initiate(_owner.ValueStore.Owner, Property);
-                _instancedBinding.Observable.Subscribe(this);
-            }
-
+            StartIfNecessary();
             value = _value;
             return value != AvaloniaProperty.UnsetValue;
         }
@@ -61,6 +65,15 @@ namespace Avalonia.Styling
 #else
             _owner.ValueStore?.ValueChanged(_owner, Property, oldValue);
 #endif
+        }
+
+        private void StartIfNecessary()
+        {
+            if (_instancedBinding is null)
+            {
+                _instancedBinding = _binding.Initiate(_owner.ValueStore.Owner, Property);
+                _instancedBinding.Observable.Subscribe(this);
+            }
         }
     }
 }

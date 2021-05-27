@@ -17,6 +17,7 @@ namespace Avalonia.PropertyStore
             Property = property;
         }
 
+        public bool HasValue => _hasValue;
         public StyledPropertyBase<T> Property { get; }
         AvaloniaProperty IValue.Property => Property;
 
