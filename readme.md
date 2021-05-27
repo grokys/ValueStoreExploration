@@ -2,11 +2,9 @@
 
 Trying out a new way of storing values to increase performance of the Avalonia value store.
 
-There's currently a boxing and non-boxing variant.
-
 A probably incomplete todo:
 
-- [ ] Non-local value bindings
+- [x] Non-local value bindings
 - [ ] Animation bindings
 - [ ] Template support in setters
 - [ ] Property value inhertance
@@ -54,7 +52,7 @@ A probably incomplete todo:
 | Apply_Simple_Styles |             50 |                 5 | 31.446 us | 0.1676 us | 0.1485 us | 5.3101 |     - |     - |     22 KB |
 | Apply_Simple_Styles |             50 |                50 | 33.883 us | 0.5897 us | 0.6310 us | 5.3101 |     - |     - |     22 KB |
 
-## Non-Boxing
+## New Value Store (this repository)
 
 At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
 
@@ -92,42 +90,3 @@ At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
 | Apply_Simple_Styles |             50 |                 1 | 7,912.6 ns | 139.02 ns | 130.04 ns | 0.3357 |     - |     - |   1,464 B |
 | Apply_Simple_Styles |             50 |                 5 | 7,418.9 ns |  98.30 ns | 140.98 ns | 0.3357 |     - |     - |   1,464 B |
 | Apply_Simple_Styles |             50 |                50 | 8,480.1 ns |  41.36 ns |  38.68 ns | 0.3357 |     - |     - |   1,464 B |
-
-## Boxing
-
-At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
-
-|           Method |     Mean |    Error |   StdDev |  Gen 0 | Gen 1 | Gen 2 | Allocated |
-|----------------- |---------:|---------:|---------:|-------:|------:|------:|----------:|
-| GetDefaultValues | 23.79 us | 0.064 us | 0.060 us | 6.8665 |     - |     - |     28 KB |
-
-|               Method |       Mean |    Error |   StdDev | Ratio | RatioSD | Gen 0 | Gen 1 | Gen 2 | Allocated |
-|--------------------- |-----------:|---------:|---------:|------:|--------:|------:|------:|------:|----------:|
-| GetClrPropertyValues |   436.9 ns |  4.23 ns |  3.95 ns |  1.00 |    0.00 |     - |     - |     - |         - |
-|            GetValues | 5,984.1 ns | 18.26 ns | 16.18 ns | 13.70 |    0.14 |     - |     - |     - |         - |
-
-|               Method |       Mean |     Error |    StdDev | Ratio | RatioSD |   Gen 0 | Gen 1 | Gen 2 | Allocated |
-|--------------------- |-----------:|----------:|----------:|------:|--------:|--------:|------:|------:|----------:|
-| SetClrPropertyValues |   5.554 us | 0.0287 us | 0.0268 us |  1.00 |    0.00 |       - |     - |     - |         - |
-|            SetValues | 289.386 us | 1.6997 us | 1.5068 us | 52.08 |    0.35 | 13.6719 |     - |     - |  57,600 B |
-
-|                            Method |     Mean |   Error |  StdDev |   Gen 0 | Gen 1 | Gen 2 | Allocated |
-|---------------------------------- |---------:|--------:|--------:|--------:|------:|------:|----------:|
-| Setup_Dispose_LocalValue_Bindings | 737.9 us | 3.59 us | 3.19 us | 27.3438 |     - |     - |    112 KB |
-|          Fire_LocalValue_Bindings | 299.2 us | 1.22 us | 1.15 us | 14.6484 |     - |     - |     60 KB |
-
-|                            Method |     Mean |    Error |   StdDev |   Gen 0 | Gen 1 | Gen 2 | Allocated |
-|---------------------------------- |---------:|---------:|---------:|--------:|------:|------:|----------:|
-| Toggle_Style_Activation_Via_Class | 52.41 us | 0.137 us | 0.122 us | 18.4937 |     - |     - |     76 KB |
-
-|              Method | MatchingStyles | NonMatchingStyles |       Mean |    Error |   StdDev |     Median |  Gen 0 | Gen 1 | Gen 2 | Allocated |
-|-------------------- |--------------- |------------------ |-----------:|---------:|---------:|-----------:|-------:|------:|------:|----------:|
-| Apply_Simple_Styles |              1 |                 1 |   433.3 ns |  1.14 ns |  0.96 ns |   433.1 ns | 0.1431 |     - |     - |     600 B |
-| Apply_Simple_Styles |              1 |                 5 |   561.8 ns |  8.52 ns |  7.97 ns |   563.4 ns | 0.1431 |     - |     - |     600 B |
-| Apply_Simple_Styles |              1 |                50 | 1,918.1 ns | 24.94 ns | 23.33 ns | 1,913.7 ns | 0.1431 |     - |     - |     600 B |
-| Apply_Simple_Styles |              5 |                 1 | 1,005.3 ns | 20.16 ns | 37.86 ns | 1,010.4 ns | 0.1640 |     - |     - |     688 B |
-| Apply_Simple_Styles |              5 |                 5 | 1,301.5 ns | 16.07 ns | 15.03 ns | 1,302.9 ns | 0.1640 |     - |     - |     688 B |
-| Apply_Simple_Styles |              5 |                50 | 2,403.5 ns | 48.08 ns | 92.64 ns | 2,348.3 ns | 0.1640 |     - |     - |     688 B |
-| Apply_Simple_Styles |             50 |                 1 | 7,470.0 ns | 31.98 ns | 29.91 ns | 7,468.7 ns | 0.3891 |     - |     - |   1,656 B |
-| Apply_Simple_Styles |             50 |                 5 | 7,455.4 ns | 45.57 ns | 42.63 ns | 7,463.0 ns | 0.3891 |     - |     - |   1,656 B |
-| Apply_Simple_Styles |             50 |                50 | 8,883.8 ns | 48.24 ns | 42.77 ns | 8,873.8 ns | 0.3815 |     - |     - |   1,656 B |

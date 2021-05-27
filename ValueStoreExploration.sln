@@ -5,9 +5,7 @@ VisualStudioVersion = 16.0.31306.274
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonia.Base", "Avalonia.Base\Avalonia.Base.csproj", "{EEA64613-6BE1-4588-BCAC-356B61BBC593}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoxingValueStore", "BoxingValueStore\BoxingValueStore.csproj", "{3AC79E25-6562-4C2F-93D4-9B734294FE1F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonBoxingValueStore", "NonBoxingValueStore\NonBoxingValueStore.csproj", "{124D66BF-C7A8-4D14-8ECB-E5D97DAED03A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NonBoxingValueStore", "NonBoxingValueStore\NonBoxingValueStore.csproj", "{124D66BF-C7A8-4D14-8ECB-E5D97DAED03A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{EEA64613-6BE1-4588-BCAC-356B61BBC593}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA64613-6BE1-4588-BCAC-356B61BBC593}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA64613-6BE1-4588-BCAC-356B61BBC593}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3AC79E25-6562-4C2F-93D4-9B734294FE1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AC79E25-6562-4C2F-93D4-9B734294FE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AC79E25-6562-4C2F-93D4-9B734294FE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3AC79E25-6562-4C2F-93D4-9B734294FE1F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{124D66BF-C7A8-4D14-8ECB-E5D97DAED03A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{124D66BF-C7A8-4D14-8ECB-E5D97DAED03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{124D66BF-C7A8-4D14-8ECB-E5D97DAED03A}.Release|Any CPU.ActiveCfg = Release|Any CPU
