@@ -52,6 +52,11 @@ A probably incomplete todo:
 | Apply_Simple_Styles |             50 |                 5 | 31.446 us | 0.1676 us | 0.1485 us | 5.3101 |     - |     - |     22 KB |
 | Apply_Simple_Styles |             50 |                50 | 33.883 us | 0.5897 us | 0.6310 us | 5.3101 |     - |     - |     22 KB |
 
+|                      Method |     Mean |   Error |  StdDev | Ratio | RatioSD |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+|---------------------------- |---------:|--------:|--------:|------:|--------:|--------:|------:|------:|----------:|
+| PropertyChangedSubscription | 349.9 us | 6.80 us | 9.07 us |  1.00 |    0.00 | 22.4609 |     - |     - |     92 KB |
+|              GetObservables | 565.6 us | 2.21 us | 2.07 us |  1.63 |    0.04 | 23.4375 |     - |     - |     97 KB |
+
 ## New Value Store (this repository)
 
 At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
@@ -90,3 +95,8 @@ At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
 | Apply_Simple_Styles |             50 |                 1 | 7,912.6 ns | 139.02 ns | 130.04 ns | 0.3357 |     - |     - |   1,464 B |
 | Apply_Simple_Styles |             50 |                 5 | 7,418.9 ns |  98.30 ns | 140.98 ns | 0.3357 |     - |     - |   1,464 B |
 | Apply_Simple_Styles |             50 |                50 | 8,480.1 ns |  41.36 ns |  38.68 ns | 0.3357 |     - |     - |   1,464 B |
+
+|                      Method |     Mean |   Error |  StdDev | Ratio |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+|---------------------------- |---------:|--------:|--------:|------:|-------:|------:|------:|----------:|
+| PropertyChangedSubscription | 359.5 us | 1.56 us | 1.46 us |  1.00 | 0.9766 |     - |     - |      6 KB |
+|              GetObservables | 350.3 us | 1.54 us | 1.36 us |  0.97 | 1.4648 |     - |     - |      7 KB |
