@@ -347,7 +347,7 @@ namespace Avalonia
         }
 
         internal abstract void RaisePropertyChanged(
-            IAvaloniaObject owner,
+            AvaloniaObject owner,
             object oldValue,
             object newValue,
             BindingPriority priority);

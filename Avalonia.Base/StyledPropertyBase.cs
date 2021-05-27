@@ -174,7 +174,7 @@ namespace Avalonia
         object IStyledPropertyAccessor.GetDefaultValue(Type type) => GetDefaultBoxedValue(type);
 
         internal override void RaisePropertyChanged(
-            IAvaloniaObject owner,
+            AvaloniaObject owner,
             object oldValue,
             object newValue,
             BindingPriority priority)

@@ -92,14 +92,5 @@ namespace Avalonia
         /// <see cref="AddInheritanceChild(IAvaloniaObject)"/>.
         /// </remarks>
         void RemoveInheritanceChild(IAvaloniaObject child);
-
-        /// <summary>
-        /// HACK: Remove this and call directly into AvaloniaObject.
-        /// </summary>
-        void RaisePropertyChanged<T>(
-            AvaloniaProperty<T> property,
-            Optional<T> oldValue,
-            BindingValue<T> newValue,
-            BindingPriority priority);
     }
 }

@@ -62,13 +62,11 @@ namespace Avalonia
             PropertyChanged?.Invoke(this, e);
         }
 
-        internal ValueStore UnitTestGetValueStore() => _values;
         private protected void ApplyStyle(IValueFrame frame) => _values.ApplyStyle(frame);
         private protected void BeginStyling() => _values.BeginStyling();
         private protected void EndStyling() => _values.EndStyling();
 
-        // TODO: Make internal
-        public void RaisePropertyChanged<T>(
+        internal void RaisePropertyChanged<T>(
             AvaloniaProperty<T> property,
             Optional<T> oldValue,
             BindingValue<T> newValue,
@@ -83,5 +81,7 @@ namespace Avalonia
             OnPropertyChanged(e);
             AvaloniaPropertyChangedEventArgsPool<T>.Release(e);
         }
+
+        internal ValueStore UnitTestGetValueStore() => _values;
     }
 }
