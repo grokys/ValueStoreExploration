@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Data;
+using Microsoft.Reactive.Testing;
 using Xunit;
 
 namespace Avalonia.Base.UnitTests
@@ -313,24 +314,24 @@ namespace Avalonia.Base.UnitTests
             Assert.Equal("foodefault", target.GetValue(property));
         }
 
-        //[Fact]
-        //public void Completing_StyleTrigger_Binding_Reverts_To_StyleBinding()
-        //{
-        //    var property = Class1.FooProperty;
-        //    var target = new Class1();
-        //    var source1 = new Subject<string>();
-        //    var source2 = new Subject<string>();
+        [Fact]
+        public void Completing_StyleTrigger_Binding_Reverts_To_StyleBinding()
+        {
+            var property = Class1.FooProperty;
+            var target = new Class1();
+            var source1 = new Subject<BindingValue<string>>();
+            var source2 = new Subject<BindingValue<string>>();
 
-        //    target.Bind(property, source1, BindingPriority.Style);
-        //    target.Bind(property, source2, BindingPriority.StyleTrigger);
+            target.Bind(property, source1, BindingPriority.Style);
+            target.Bind(property, source2, BindingPriority.StyleTrigger);
 
-        //    source1.OnNext("foo");
-        //    source2.OnNext("bar");
-        //    source2.OnCompleted();
-        //    source1.OnNext("baz");
+            source1.OnNext("foo");
+            source2.OnNext("bar");
+            source2.OnCompleted();
+            source1.OnNext("baz");
 
-        //    Assert.Equal("baz", target.GetValue(property));
-        //}
+            Assert.Equal("baz", target.GetValue(property));
+        }
 
         //[Fact]
         //public void Bind_NonGeneric_Sets_Current_Value()
@@ -388,15 +389,15 @@ namespace Avalonia.Base.UnitTests
         //    Assert.Equal(6.7, target.GetValue(Class1.QuxProperty));
         //}
 
-        //[Fact]
-        //public void Bind_Does_Not_Throw_Exception_For_Unregistered_Property()
-        //{
-        //    Class1 target = new Class1();
+        [Fact]
+        public void Bind_Does_Not_Throw_Exception_For_Unregistered_Property()
+        {
+            Class1 target = new Class1();
 
-        //    target.Bind(Class2.BarProperty, Observable.Never<string>().StartWith("foo"));
+            target.Bind(Class2.BarProperty, Observable.Never<BindingValue<string>>().StartWith("foo"));
 
-        //    Assert.Equal("foo", target.GetValue(Class2.BarProperty));
-        //}
+            Assert.Equal("foo", target.GetValue(Class2.BarProperty));
+        }
 
         //[Fact]
         //public void Bind_Sets_Subsequent_Value()
@@ -419,21 +420,21 @@ namespace Avalonia.Base.UnitTests
         //    Assert.Equal("foodefault", target.GetValue(Class1.FooProperty));
         //}
 
-        //[Fact]
-        //public void Observable_Is_Unsubscribed_When_Subscription_Disposed()
-        //{
-        //    var scheduler = new TestScheduler();
-        //    var source = scheduler.CreateColdObservable<string>();
-        //    var target = new Class1();
+        [Fact]
+        public void Observable_Is_Unsubscribed_When_Subscription_Disposed()
+        {
+            var scheduler = new TestScheduler();
+            var source = scheduler.CreateColdObservable<BindingValue<string>>();
+            var target = new Class1();
 
-        //    var subscription = target.Bind(Class1.FooProperty, source);
-        //    Assert.Equal(1, source.Subscriptions.Count);
-        //    Assert.Equal(Subscription.Infinite, source.Subscriptions[0].Unsubscribe);
+            var subscription = target.Bind(Class1.FooProperty, source);
+            Assert.Equal(1, source.Subscriptions.Count);
+            Assert.Equal(Subscription.Infinite, source.Subscriptions[0].Unsubscribe);
 
-        //    subscription.Dispose();
-        //    Assert.Equal(1, source.Subscriptions.Count);
-        //    Assert.Equal(0, source.Subscriptions[0].Unsubscribe);
-        //}
+            subscription.Dispose();
+            Assert.Equal(1, source.Subscriptions.Count);
+            Assert.Equal(0, source.Subscriptions[0].Unsubscribe);
+        }
 
         //[Fact]
         //public void Two_Way_Separate_Binding_Works()
@@ -598,57 +599,57 @@ namespace Avalonia.Base.UnitTests
         //    Assert.Equal("first", target2.GetValue(Class1.FooProperty));
         //}
 
-        //[Fact]
-        //public void Binding_Error_Reverts_To_Default_Value()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<BindingValue<string>>();
+        [Fact]
+        public void Binding_Error_Reverts_To_Default_Value()
+        {
+            var target = new Class1();
+            var source = new Subject<BindingValue<string>>();
 
-        //    target.Bind(Class1.FooProperty, source);
-        //    source.OnNext("initial");
-        //    source.OnNext(BindingValue<string>.BindingError(new InvalidOperationException("Foo")));
+            target.Bind(Class1.FooProperty, source);
+            source.OnNext("initial");
+            source.OnNext(BindingValue<string>.BindingError(new InvalidOperationException("Foo")));
 
-        //    Assert.Equal("foodefault", target.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("foodefault", target.GetValue(Class1.FooProperty));
+        }
 
-        //[Fact]
-        //public void Binding_Error_With_FallbackValue_Causes_Target_Update()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<BindingValue<string>>();
+        [Fact]
+        public void Binding_Error_With_FallbackValue_Causes_Target_Update()
+        {
+            var target = new Class1();
+            var source = new Subject<BindingValue<string>>();
 
-        //    target.Bind(Class1.FooProperty, source);
-        //    source.OnNext("initial");
-        //    source.OnNext(BindingValue<string>.BindingError(new InvalidOperationException("Foo"), "bar"));
+            target.Bind(Class1.FooProperty, source);
+            source.OnNext("initial");
+            source.OnNext(BindingValue<string>.BindingError(new InvalidOperationException("Foo"), "bar"));
 
-        //    Assert.Equal("bar", target.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("bar", target.GetValue(Class1.FooProperty));
+        }
 
-        //[Fact]
-        //public void DataValidationError_Does_Not_Cause_Target_Update()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<BindingValue<string>>();
+        [Fact]
+        public void DataValidationError_Does_Not_Cause_Target_Update()
+        {
+            var target = new Class1();
+            var source = new Subject<BindingValue<string>>();
 
-        //    target.Bind(Class1.FooProperty, source);
-        //    source.OnNext("initial");
-        //    source.OnNext(BindingValue<string>.DataValidationError(new InvalidOperationException("Foo")));
+            target.Bind(Class1.FooProperty, source);
+            source.OnNext("initial");
+            source.OnNext(BindingValue<string>.DataValidationError(new InvalidOperationException("Foo")));
 
-        //    Assert.Equal("initial", target.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("initial", target.GetValue(Class1.FooProperty));
+        }
 
-        //[Fact]
-        //public void DataValidationError_With_FallbackValue_Causes_Target_Update()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<BindingValue<string>>();
+        [Fact]
+        public void DataValidationError_With_FallbackValue_Causes_Target_Update()
+        {
+            var target = new Class1();
+            var source = new Subject<BindingValue<string>>();
 
-        //    target.Bind(Class1.FooProperty, source);
-        //    source.OnNext("initial");
-        //    source.OnNext(BindingValue<string>.DataValidationError(new InvalidOperationException("Foo"), "bar"));
+            target.Bind(Class1.FooProperty, source);
+            source.OnNext("initial");
+            source.OnNext(BindingValue<string>.DataValidationError(new InvalidOperationException("Foo"), "bar"));
 
-        //    Assert.Equal("bar", target.GetValue(Class1.FooProperty));
-        //}
+            Assert.Equal("bar", target.GetValue(Class1.FooProperty));
+        }
 
         //[Fact]
         //public void Bind_Logs_Binding_Error()
@@ -837,17 +838,17 @@ namespace Avalonia.Base.UnitTests
         //    target.Bind(TextBlock.TextProperty, new Binding("[0]", BindingMode.TwoWay));
         //}
 
-        //[Fact]
-        //public void Disposing_Completed_Binding_Does_Not_Throw()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<string>();
-        //    var subscription = target.Bind(Class1.FooProperty, source);
+        [Fact]
+        public void Disposing_Completed_Binding_Does_Not_Throw()
+        {
+            var target = new Class1();
+            var source = new Subject<BindingValue<string>>();
+            var subscription = target.Bind(Class1.FooProperty, source);
 
-        //    source.OnCompleted();
+            source.OnCompleted();
 
-        //    subscription.Dispose();
-        //}
+            subscription.Dispose();
+        }
 
         /// <summary>
         /// Returns an observable that returns a single value but does not complete.
@@ -878,11 +879,11 @@ namespace Avalonia.Base.UnitTests
             }
         }
 
-        //private class Class2 : Class1
-        //{
-        //    public static readonly StyledProperty<string> BarProperty =
-        //        AvaloniaProperty.Register<Class2, string>("Bar", "bardefault");
-        //}
+        private class Class2 : Class1
+        {
+            public static readonly StyledProperty<string> BarProperty =
+                AvaloniaProperty.Register<Class2, string>("Bar", "bardefault");
+        }
 
         //private class TestOneTimeBinding : IBinding
         //{
