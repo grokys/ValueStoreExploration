@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Avalonia.Data;
-using BenchmarkDotNet.Exporters;
 
 namespace Avalonia.PropertyStore
 {

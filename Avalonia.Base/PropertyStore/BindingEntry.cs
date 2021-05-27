@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reactive.Disposables;
 using Avalonia.Data;
+using Avalonia.Utilities;
 
 namespace Avalonia.PropertyStore
 {
