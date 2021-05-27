@@ -8,7 +8,8 @@ A probably incomplete todo:
 - [x] Animation bindings
 - [ ] Template support in setters
 - [ ] Property value inhertance
-- [ ] Validation/coercion
+- [x] Validation
+- [ ] Coercion
 - [ ] GetBaseValue
 - [x] GetObservable
 - [ ] OnPropertyChangedCore
