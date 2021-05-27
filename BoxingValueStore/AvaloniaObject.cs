@@ -59,6 +59,7 @@ namespace Avalonia
             PropertyChanged?.Invoke(this, e);
         }
 
+        internal ValueStore UnitTestGetValueStore() => _values;
         private protected void ApplyStyle(IValueFrame frame) => _values.ApplyStyle(frame);
         private protected void BeginStyling() => _values.BeginStyling();
         private protected void EndStyling() => _values.EndStyling();

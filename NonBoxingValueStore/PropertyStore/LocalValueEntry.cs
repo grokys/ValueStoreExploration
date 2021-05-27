@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Avalonia.Data;
+using BenchmarkDotNet.Exporters;
 
 namespace Avalonia.PropertyStore
 {
@@ -29,6 +30,9 @@ namespace Avalonia.PropertyStore
 
         public void ClearValue()
         {
+            if (_bindingSubscription is null)
+                _owner.Remove(this);
+
             if (_hasValue)
             {
                 var oldValue = _hasValue ? new Optional<T>(_value) : default;
@@ -41,7 +45,7 @@ namespace Avalonia.PropertyStore
         public void Dispose()
         {
             _bindingSubscription?.Dispose();
-            ClearValue();
+            BindingCompleted();
         }
 
         public void SetValue(T? value)
@@ -67,8 +71,8 @@ namespace Avalonia.PropertyStore
             return _hasValue;
         }
 
-        void IObserver<BindingValue<T>>.OnCompleted() => ClearValue();
-        void IObserver<BindingValue<T>>.OnError(Exception error) => ClearValue();
+        void IObserver<BindingValue<T>>.OnCompleted() => BindingCompleted();
+        void IObserver<BindingValue<T>>.OnError(Exception error) => BindingCompleted();
 
         void IObserver<BindingValue<T>>.OnNext(BindingValue<T> value)
         {
@@ -76,6 +80,12 @@ namespace Avalonia.PropertyStore
                 SetValue(value.Value);
             else if (value.Type == BindingValueType.BindingError)
                 ClearValue();
+        }
+
+        private void BindingCompleted()
+        {
+            _bindingSubscription = null;
+            ClearValue();
         }
     }
 }

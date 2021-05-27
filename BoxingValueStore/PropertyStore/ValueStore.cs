@@ -16,6 +16,7 @@ namespace Avalonia.PropertyStore
         public ValueStore(AvaloniaObject owner) => Owner = owner;
 
         public AvaloniaObject Owner { get; }
+        public IReadOnlyList<IValueFrame> Frames => _frames;
 
         public void BeginStyling() => ++_applyingStyles;
 

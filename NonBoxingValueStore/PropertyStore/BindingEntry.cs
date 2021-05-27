@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using Avalonia.Data;
 
 namespace Avalonia.PropertyStore
@@ -44,7 +45,7 @@ namespace Avalonia.PropertyStore
         public void Dispose()
         {
             _bindingSubscription?.Dispose();
-            _owner?.RemoveBindingEntry(this);
+            BindingCompleted();
         }
 
         public void SetOwner(ValueStore? owner) => _owner = owner;
@@ -73,8 +74,8 @@ namespace Avalonia.PropertyStore
         bool ICollection<IValue>.Remove(IValue item) => throw new NotImplementedException();
         IEnumerator<IValue> IEnumerable<IValue>.GetEnumerator() => throw new NotImplementedException();
         IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
-        void IObserver<BindingValue<T>>.OnCompleted() => Dispose();
-        void IObserver<BindingValue<T>>.OnError(Exception error) => Dispose();
+        void IObserver<BindingValue<T>>.OnCompleted() => BindingCompleted();
+        void IObserver<BindingValue<T>>.OnError(Exception error) => BindingCompleted();
 
         void IObserver<BindingValue<T>>.OnNext(BindingValue<T> value)
         {
@@ -86,9 +87,12 @@ namespace Avalonia.PropertyStore
 
         private void ClearValue()
         {
-            if (_hasValue)
+            var oldValue = _hasValue ? new Optional<T>(_value) : default;
+
+            if (_bindingSubscription is null)
+                _owner?.RemoveBindingEntry(this, oldValue);
+            else if (_hasValue)
             {
-                var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _hasValue = false;
                 _value = default;
                 _owner?.ValueChanged(this, Property, oldValue);
@@ -110,8 +114,17 @@ namespace Avalonia.PropertyStore
         {
             if (_bindingSubscription is null)
             {
+                // Prevent re-entrancy by first assigning the subscription to a dummy
+                // non-null value.
+                _bindingSubscription = Disposable.Empty;
                 _bindingSubscription = _source.Subscribe(this);
             }
+        }
+
+        private void BindingCompleted()
+        {
+            _bindingSubscription = null;
+            ClearValue();
         }
     }
 }

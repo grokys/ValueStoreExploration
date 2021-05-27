@@ -28,7 +28,11 @@ namespace Avalonia.PropertyStore
             return e.AddBinding(source);
         }
 
-        public bool ClearValue(AvaloniaProperty property) => Remove(property);
+        public void ClearValue<T>(StyledPropertyBase<T> property)
+        {
+            if (TryGet(property, out var entry))
+                ((LocalValueEntry<T>)entry).ClearValue();
+        }
 
         public void SetValue<T>(StyledPropertyBase<T> property, T? value)
         {
@@ -42,5 +46,7 @@ namespace Avalonia.PropertyStore
             Add(e);
             e.SetValue(value);
         }
+
+        public void Remove(IValue value) => base.Remove(value.Property);
     }
 }

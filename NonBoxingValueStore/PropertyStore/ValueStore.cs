@@ -15,6 +15,7 @@ namespace Avalonia.PropertyStore
         public ValueStore(AvaloniaObject owner) => Owner = owner;
 
         public AvaloniaObject Owner { get; }
+        public IReadOnlyList<IValueFrame> Frames => _frames;
 
         public void BeginStyling() => ++_applyingStyles;
 
@@ -60,8 +61,7 @@ namespace Avalonia.PropertyStore
 
         public void ClearLocalValue<T>(StyledPropertyBase<T> property)
         {
-            if (_localValues?.ClearValue(property) == true)
-                ReevaluateEffectiveValue(property);
+            _localValues?.ClearValue(property);
         }
 
         public void SetLocalValue<T>(StyledPropertyBase<T> property, T? value)
@@ -153,10 +153,10 @@ namespace Avalonia.PropertyStore
             ReevaluateEffectiveValues();
         }
 
-        public void RemoveBindingEntry<T>(BindingEntry<T> entry)
+        public void RemoveBindingEntry<T>(BindingEntry<T> entry, Optional<T> oldValue)
         {
             _frames.Remove(entry);
-            ReevaluateEffectiveValue(entry.Property);
+            ReevaluateEffectiveValue(entry.Property, oldValue);
         }
 
         private void AddFrame(IValueFrame frame)
