@@ -734,13 +734,13 @@ namespace Avalonia.Base.UnitTests
         //    Assert.Equal(expected, child.DoubleValue);
         //}
 
-        //[Fact]
-        //public void IsAnimating_On_Property_With_No_Value_Returns_False()
-        //{
-        //    var target = new Class1();
+        [Fact]
+        public void IsAnimating_On_Property_With_No_Value_Returns_False()
+        {
+            var target = new Class1();
 
-        //    Assert.False(target.IsAnimating(Class1.FooProperty));
-        //}
+            Assert.False(target.IsAnimating(Class1.FooProperty));
+        }
 
         //[Fact]
         //public void IsAnimating_On_Property_With_Animation_Value_Returns_True()
@@ -752,51 +752,51 @@ namespace Avalonia.Base.UnitTests
         //    Assert.True(target.IsAnimating(Class1.FooProperty));
         //}
 
-        //[Fact]
-        //public void IsAnimating_On_Property_With_Non_Animation_Binding_Returns_False()
-        //{
-        //    var target = new Class1();
-        //    var source = new Subject<string>();
+        [Fact]
+        public void IsAnimating_On_Property_With_Non_Animation_Binding_Returns_False()
+        {
+            var target = new Class1();
+            var source = new Subject<string>();
 
-        //    target.Bind(Class1.FooProperty, source, BindingPriority.LocalValue);
+            target.Bind(Class1.FooProperty, source, BindingPriority.LocalValue);
 
-        //    Assert.False(target.IsAnimating(Class1.FooProperty));
-        //}
+            Assert.False(target.IsAnimating(Class1.FooProperty));
+        }
 
-        //[Fact]
-        //public void IsAnimating_On_Property_With_Animation_Binding_Returns_True()
-        //{
-        //    var target = new Class1();
-        //    var source = new BehaviorSubject<string>("foo");
+        [Fact]
+        public void IsAnimating_On_Property_With_Animation_Binding_Returns_True()
+        {
+            var target = new Class1();
+            var source = new BehaviorSubject<string>("foo");
 
-        //    target.Bind(Class1.FooProperty, source, BindingPriority.Animation);
+            target.Bind(Class1.FooProperty, source, BindingPriority.Animation);
 
-        //    Assert.True(target.IsAnimating(Class1.FooProperty));
-        //}
+            Assert.True(target.IsAnimating(Class1.FooProperty));
+        }
 
-        //[Fact]
-        //public void IsAnimating_On_Property_With_Local_Value_And_Animation_Binding_Returns_True()
-        //{
-        //    var target = new Class1();
-        //    var source = new BehaviorSubject<string>("foo");
+        [Fact]
+        public void IsAnimating_On_Property_With_Local_Value_And_Animation_Binding_Returns_True()
+        {
+            var target = new Class1();
+            var source = new BehaviorSubject<string>("foo");
 
-        //    target.SetValue(Class1.FooProperty, "bar");
-        //    target.Bind(Class1.FooProperty, source, BindingPriority.Animation);
+            target.SetValue(Class1.FooProperty, "bar");
+            target.Bind(Class1.FooProperty, source, BindingPriority.Animation);
 
-        //    Assert.True(target.IsAnimating(Class1.FooProperty));
-        //}
+            Assert.True(target.IsAnimating(Class1.FooProperty));
+        }
 
-        //[Fact]
-        //public void IsAnimating_Returns_True_When_Animated_Value_Is_Same_As_Local_Value()
-        //{
-        //    var target = new Class1();
-        //    var source = new BehaviorSubject<string>("foo");
+        [Fact]
+        public void IsAnimating_Returns_True_When_Animated_Value_Is_Same_As_Local_Value()
+        {
+            var target = new Class1();
+            var source = new BehaviorSubject<string>("foo");
 
-        //    target.SetValue(Class1.FooProperty, "foo");
-        //    target.Bind(Class1.FooProperty, source, BindingPriority.Animation);
+            target.SetValue(Class1.FooProperty, "foo");
+            target.Bind(Class1.FooProperty, source, BindingPriority.Animation);
 
-        //    Assert.True(target.IsAnimating(Class1.FooProperty));
-        //}
+            Assert.True(target.IsAnimating(Class1.FooProperty));
+        }
 
         //[Fact]
         //public void TwoWay_Binding_Should_Not_Call_Setter_On_Creation()

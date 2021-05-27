@@ -5,7 +5,7 @@ Trying out a new way of storing values to increase performance of the Avalonia v
 A probably incomplete todo:
 
 - [x] Non-local value bindings
-- [ ] Animation bindings
+- [x] Animation bindings
 - [ ] Template support in setters
 - [ ] Property value inhertance
 - [ ] Validation/coercion

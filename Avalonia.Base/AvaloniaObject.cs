@@ -65,11 +65,7 @@ namespace Avalonia
             return _values.GetValue(property);
         }
 
-        public bool IsAnimating(AvaloniaProperty property)
-        {
-            throw new NotImplementedException();
-        }
-
+        public bool IsAnimating(AvaloniaProperty property) => _values.IsAnimating(property);
         public bool IsSet(AvaloniaProperty property) => _values.IsSet(property);
 
         public void RemoveInheritanceChild(IAvaloniaObject child)

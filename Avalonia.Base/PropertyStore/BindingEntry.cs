@@ -31,7 +31,7 @@ namespace Avalonia.PropertyStore
 
         public BindingEntry(
             StyledPropertyBase<T> property,
-            IObservable<T> source,
+            IObservable<T?> source,
             BindingPriority priority)
         {
             _source = source;
@@ -143,7 +143,7 @@ namespace Avalonia.PropertyStore
                 if (_source is IObservable<BindingValue<T>> b)
                     _bindingSubscription = b.Subscribe(this);
                 else
-                    _bindingSubscription = ((IObservable<T>)_source).Subscribe(this);
+                    _bindingSubscription = ((IObservable<T?>)_source).Subscribe(this);
             }
         }
 

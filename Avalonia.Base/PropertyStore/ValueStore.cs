@@ -140,6 +140,13 @@ namespace Avalonia.PropertyStore
             return false;
         }
 
+        public bool IsAnimating(AvaloniaProperty property)
+        {
+            if (EvaluateEffectiveValue(property, out _, out var priority))
+                return priority < BindingPriority.LocalValue;
+            return false;
+        }
+
         public bool IsSet(AvaloniaProperty property)
         {
             for (var i = _frames.Count - 1; i >= 0; --i)
@@ -198,7 +205,7 @@ namespace Avalonia.PropertyStore
         {
             var newValue = AvaloniaProperty.UnsetValue;
 
-            if (ReevaluateEffectiveValue(property, out var value, out var priority))
+            if (EvaluateEffectiveValue(property, out var value, out var priority))
             {
                 _effectiveValues ??= new Dictionary<int, IValue>();
                 _effectiveValues[property.Id] = value;
@@ -222,7 +229,7 @@ namespace Avalonia.PropertyStore
         {
             Optional<T> newValue = default;
 
-            if (ReevaluateEffectiveValue(property, out var value, out var priority))
+            if (EvaluateEffectiveValue(property, out var value, out var priority))
             {
                 _effectiveValues ??= new Dictionary<int, IValue>();
                 _effectiveValues[property.Id] = value;
@@ -237,7 +244,7 @@ namespace Avalonia.PropertyStore
             RaisePropertyChanged(property, oldValue, newValue, priority);
         }
 
-        private bool ReevaluateEffectiveValue(
+        private bool EvaluateEffectiveValue(
             AvaloniaProperty property,
             [NotNullWhen(true)] out IValue? result,
             out BindingPriority priority)
