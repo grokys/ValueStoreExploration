@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Avalonia.Data;
 using Avalonia.PropertyStore;
 using Avalonia.Reactive;
+using Avalonia.Threading;
 
 namespace Avalonia
 {
@@ -13,21 +14,26 @@ namespace Avalonia
 
         public AvaloniaObject()
         {
+            VerifyAccess();
             _values = new ValueStore(this);
         }
 
-        public event EventHandler<AvaloniaPropertyChangedEventArgs>? PropertyChanged;
 
         public void AddInheritanceChild(IAvaloniaObject child)
         {
-            throw new NotImplementedException();
         }
+
+        public event EventHandler<AvaloniaPropertyChangedEventArgs>? PropertyChanged;
 
         public IDisposable Bind<T>(
             StyledPropertyBase<T> property,
             IObservable<BindingValue<T>> source,
             BindingPriority priority = BindingPriority.LocalValue)
         {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            _ = source ?? throw new ArgumentNullException(nameof(source));
+            VerifyAccess();
+
             return _values.AddBinding(property, source, priority);
         }
 
@@ -36,18 +42,34 @@ namespace Avalonia
             IObservable<T?> source,
             BindingPriority priority = BindingPriority.LocalValue)
         {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            _ = source ?? throw new ArgumentNullException(nameof(source));
+            VerifyAccess();
+
             return _values.AddBinding(property, source, priority);
         }
 
-        public void ClearValue<T>(StyledPropertyBase<T> property) => _values.ClearLocalValue(property);
+        public void ClearValue<T>(StyledPropertyBase<T> property)
+        {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
+            _values.ClearLocalValue(property);
+        }
 
         public void CoerceValue<T>(StyledPropertyBase<T> property)
         {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
             throw new NotImplementedException();
         }
 
         public IObservable<T?> GetObservable<T>(StyledPropertyBase<T> property)
         {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
             _observables ??= new();
 
             if (_observables.TryGetValue(property, out var o))
@@ -62,21 +84,37 @@ namespace Avalonia
 
         public T? GetValue<T>(StyledPropertyBase<T> property)
         {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
             return _values.GetValue(property);
         }
 
-        public bool IsAnimating(AvaloniaProperty property) => _values.IsAnimating(property);
-        public bool IsSet(AvaloniaProperty property) => _values.IsSet(property);
-
-        public void RemoveInheritanceChild(IAvaloniaObject child)
+        public bool IsAnimating(AvaloniaProperty property)
         {
-            throw new NotImplementedException();
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
+            return _values.IsAnimating(property);
+        }
+
+        public bool IsSet(AvaloniaProperty property)
+        {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
+            return _values.IsSet(property);
         }
 
         public void SetValue<T>(StyledPropertyBase<T> property, T value)
         {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
             _values.SetLocalValue(property, value);
         }
+
+        public void VerifyAccess() => Dispatcher.UIThread.VerifyAccess();
 
         protected void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> e)
         {

@@ -101,26 +101,5 @@ namespace Avalonia
         /// <typeparam name="T">The type of the property.</typeparam>
         /// <param name="property">The property.</param>
         void CoerceValue<T>(StyledPropertyBase<T> property);
-
-        /// <summary>
-        /// Registers an object as an inheritance child.
-        /// </summary>
-        /// <param name="child">The inheritance child.</param>
-        /// <remarks>
-        /// Inheritance children will receive a call to
-        /// <see cref="InheritedPropertyChanged{T}(AvaloniaProperty{T}, Optional{T}, Optional{T})"/>
-        /// when an inheritable property value changes on the parent.
-        /// </remarks>
-        void AddInheritanceChild(IAvaloniaObject child);
-
-        /// <summary>
-        /// Unregisters an object as an inheritance child.
-        /// </summary>
-        /// <param name="child">The inheritance child.</param>
-        /// <remarks>
-        /// Removes an inheritance child that was added by a call to
-        /// <see cref="AddInheritanceChild(IAvaloniaObject)"/>.
-        /// </remarks>
-        void RemoveInheritanceChild(IAvaloniaObject child);
     }
 }
