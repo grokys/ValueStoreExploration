@@ -7,7 +7,7 @@ A probably incomplete todo:
 - [x] Non-local value bindings
 - [x] Animation bindings
 - [ ] Template support in setters
-- [ ] Property value inhertance
+- [x] Property value inhertance
 - [x] Validation
 - [ ] Coercion
 - [ ] GetBaseValue
