@@ -211,7 +211,7 @@ namespace Avalonia.Base.UnitTests
                 AvaloniaProperty.Register<Class1, string?>("Foo", "foodefault", inherits: true);
             public static readonly StyledProperty<string?> BazProperty =
                 AvaloniaProperty.Register<Class1, string?>("Baz", "bazdefault", inherits: true);
-            private Class1? _Parent;
+            private Class1? _parent;
             private List<Class1> _inheritanceChildren = new();
 
             public string? Foo
@@ -228,14 +228,14 @@ namespace Avalonia.Base.UnitTests
 
             public Class1? Parent
             {
-                get { return _Parent; }
+                get { return _parent; }
                 set
                 {
-                    if (_Parent != value)
+                    if (_parent != value)
                     {
-                        _Parent?._inheritanceChildren.Remove(this);
-                        _Parent = value;
-                        _Parent?._inheritanceChildren.Add(this);
+                        _parent?._inheritanceChildren.Remove(this);
+                        _parent = value;
+                        _parent?._inheritanceChildren.Add(this);
                         InheritanceParentChanged(value);
                     }
                 }
@@ -243,7 +243,7 @@ namespace Avalonia.Base.UnitTests
 
             internal override int GetInheritanceChildCount() => _inheritanceChildren.Count;
             internal override AvaloniaObject GetInheritanceChild(int index) => _inheritanceChildren[index];
-            private protected override AvaloniaObject? GetInheritanceParent => _Parent;
+            private protected override AvaloniaObject? GetInheritanceParent => _parent;
         }
     }
 }

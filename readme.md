@@ -27,6 +27,15 @@ A probably incomplete todo:
 | GetClrPropertyValues |    449.9 ns |   1.38 ns |   1.29 ns |  1.00 |    0.00 |     - |     - |     - |         - |
 |            GetValues | 40,669.5 ns | 149.28 ns | 132.34 ns | 90.36 |    0.40 |     - |     - |     - |         - |
 
+|             Method | Depth |        Mean |    Error |   StdDev | Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------- |------ |------------:|---------:|---------:|------:|------:|------:|----------:|
+| GetInheritedValues |     1 |    55.43 us | 0.418 us | 0.349 us |     - |     - |     - |         - |
+| GetInheritedValues |     2 |    59.66 us | 0.207 us | 0.183 us |     - |     - |     - |         - |
+| GetInheritedValues |    10 |   102.71 us | 0.297 us | 0.248 us |     - |     - |     - |         - |
+| GetInheritedValues |    50 |   282.54 us | 0.957 us | 0.848 us |     - |     - |     - |       1 B |
+| GetInheritedValues |   100 |   509.31 us | 3.806 us | 3.560 us |     - |     - |     - |       5 B |
+| GetInheritedValues |   200 | 1,005.10 us | 0.846 us | 0.661 us |     - |     - |     - |       3 B |
+
 |               Method |       Mean |     Error |    StdDev | Ratio | RatioSD |   Gen 0 | Gen 1 | Gen 2 | Allocated |
 |--------------------- |-----------:|----------:|----------:|------:|--------:|--------:|------:|------:|----------:|
 | SetClrPropertyValues |   5.762 us | 0.0346 us | 0.0307 us |  1.00 |    0.00 |       - |     - |     - |         - |
@@ -70,6 +79,15 @@ At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
 |--------------------- |------------:|----------:|---------:|------:|--------:|------:|------:|------:|----------:|
 | GetClrPropertyValues |    436.6 ns |   1.28 ns |  1.07 ns |  1.00 |    0.00 |     - |     - |     - |         - |
 |            GetValues | 15,197.6 ns | 100.19 ns | 93.72 ns | 34.79 |    0.25 |     - |     - |     - |         - |
+
+|             Method | Depth |     Mean |    Error |   StdDev | Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------- |------ |---------:|---------:|---------:|------:|------:|------:|----------:|
+| GetInheritedValues |     1 | 20.29 us | 0.131 us | 0.123 us |     - |     - |     - |         - |
+| GetInheritedValues |     2 | 19.79 us | 0.128 us | 0.100 us |     - |     - |     - |         - |
+| GetInheritedValues |    10 | 19.85 us | 0.126 us | 0.118 us |     - |     - |     - |         - |
+| GetInheritedValues |    50 | 21.07 us | 0.412 us | 0.754 us |     - |     - |     - |         - |
+| GetInheritedValues |   100 | 19.87 us | 0.121 us | 0.113 us |     - |     - |     - |         - |
+| GetInheritedValues |   200 | 19.67 us | 0.109 us | 0.085 us |     - |     - |     - |         - |
 
 |               Method |       Mean |     Error |    StdDev | Ratio | RatioSD | Gen 0 | Gen 1 | Gen 2 | Allocated |
 |--------------------- |-----------:|----------:|----------:|------:|--------:|------:|------:|------:|----------:|
