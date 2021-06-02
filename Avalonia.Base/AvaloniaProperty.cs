@@ -348,8 +348,8 @@ namespace Avalonia
 
         internal abstract void RaisePropertyChanged(
             AvaloniaObject owner,
-            object oldValue,
-            object newValue,
+            object? oldValue,
+            object? newValue,
             BindingPriority priority);
 
         private AvaloniaPropertyMetadata GetMetadataWithOverrides(Type type)

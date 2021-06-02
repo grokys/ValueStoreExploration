@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reactive.Subjects;
+﻿using System.Reactive.Subjects;
 using Avalonia.Data;
 using Avalonia.PropertyStore;
 using Xunit;
@@ -12,7 +10,7 @@ namespace Avalonia.Tests.PropertyStore
         [Fact]
         public void Frames_Are_Initially_Empty()
         {
-            var (o, target) = CreateTarget();
+            var (_, target) = CreateTarget();
 
             Assert.Empty(target.Frames);
         }

@@ -18,11 +18,6 @@ namespace Avalonia
             _values = new ValueStore(this);
         }
 
-
-        public void AddInheritanceChild(IAvaloniaObject child)
-        {
-        }
-
         public event EventHandler<AvaloniaPropertyChangedEventArgs>? PropertyChanged;
 
         public IDisposable Bind<T>(
@@ -124,6 +119,17 @@ namespace Avalonia
         private protected void ApplyStyle(IValueFrame frame) => _values.ApplyStyle(frame);
         private protected void BeginStyling() => _values.BeginStyling();
         private protected void EndStyling() => _values.EndStyling();
+
+        internal virtual int GetInheritanceChildCount() => 0;
+        internal virtual AvaloniaObject GetInheritanceChild(int index) => throw new IndexOutOfRangeException();
+        private protected virtual AvaloniaObject? GetInheritanceParent => null;
+        
+        private protected void InheritanceParentChanged(AvaloniaObject? parent)
+        {
+            _values.InheritanceParentChanged(parent?._values);
+        }
+        
+        internal ValueStore GetValueStore() => _values;
 
         internal void RaisePropertyChanged<T>(
             AvaloniaProperty<T> property,

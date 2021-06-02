@@ -8,7 +8,8 @@ namespace Avalonia.PropertyStore
     internal class ValueStore
     {
         private int _applyingStyles;
-        private readonly List<IValueFrame> _frames = new List<IValueFrame>();
+        private readonly List<IValueFrame> _frames = new();
+        private InheritanceFrame? _inheritanceFrame;
         private LocalValueFrame? _localValues;
         private Dictionary<int, EffectiveValue>? _effectiveValues;
 
@@ -16,6 +17,7 @@ namespace Avalonia.PropertyStore
 
         public AvaloniaObject Owner { get; }
         public IReadOnlyList<IValueFrame> Frames => _frames;
+        public InheritanceFrame? InheritanceFrame => _inheritanceFrame;
 
         public void BeginStyling() => ++_applyingStyles;
 
@@ -138,6 +140,21 @@ namespace Avalonia.PropertyStore
             return false;
         }
 
+        public void InheritanceParentChanged(ValueStore? newParent)
+        {
+            var newParentFrame = newParent?.GetInheritanceFrame();
+
+            // If we don't have an inheritance frame, or we're not the owner of the inheritance
+            // frame we can directly use the parent inheritance frame. Otherwise we need to
+            // reparent the existing inheritance frame.
+            if (_inheritanceFrame is null || _inheritanceFrame.Owner != this)
+                SetInheritanceFrame(newParentFrame);
+            else
+                _inheritanceFrame.SetParent(newParentFrame);
+
+            ReevaluateEffectiveValues();
+        }
+
         public void ValueChanged(
             IValueFrame frame,
             AvaloniaProperty property,
@@ -171,7 +188,28 @@ namespace Avalonia.PropertyStore
             if (index < 0)
                 index = ~index;
             _frames.Insert(index, frame);
-            frame.SetOwner(this);
+           frame.SetOwner(this);
+        }
+
+        private InheritanceFrame GetInheritanceFrame()
+        {
+            if (_inheritanceFrame is null)
+            {
+                _inheritanceFrame = new(this);
+
+                if (_effectiveValues is object)
+                {
+                    foreach (var (_, v) in _effectiveValues)
+                    {
+                        if (v.Entry.Property.Inherits)
+                            _inheritanceFrame.SetValue(v.Entry);
+                    }
+                }
+
+                AddFrame(_inheritanceFrame);
+            }
+
+            return _inheritanceFrame;
         }
 
         private void ReevaluateEffectiveValue(AvaloniaProperty property, object? oldValue)
@@ -183,7 +221,7 @@ namespace Avalonia.PropertyStore
             else if (_effectiveValues is object)
                 _effectiveValues.Remove(property.Id);
 
-            RaisePropertyChanged(property, oldValue, newValue, priority);
+            RaisePropertyChanged(property, value, oldValue, newValue, priority);
         }
 
         private void ReevaluateEffectiveValue<T>(StyledPropertyBase<T> property)
@@ -203,7 +241,7 @@ namespace Avalonia.PropertyStore
             else if (_effectiveValues is object)
                 _effectiveValues.Remove(property.Id);
 
-            RaisePropertyChanged(property, oldValue, newValue, priority);
+            RaisePropertyChanged(property, value, oldValue, newValue, priority);
         }
 
         private bool EvaluateEffectiveValue(
@@ -230,6 +268,33 @@ namespace Avalonia.PropertyStore
                         result = value;
                         return true;
                     }
+                }
+            }
+
+            if (property.Inherits)
+            {
+                var frame = _inheritanceFrame;
+
+                if (frame?.Owner == this)
+                    frame = frame.Parent;
+
+                while (frame is object)
+                {
+                    var values = frame.Values;
+
+                    for (var j = 0; j < values.Count; ++j)
+                    {
+                        var value = values[j];
+
+                        if (value.Property == property && value.HasValue)
+                        {
+                            priority = frame.Priority;
+                            result = value;
+                            return true;
+                        }
+                    }
+
+                    frame = frame.Parent;
                 }
             }
 
@@ -264,6 +329,29 @@ namespace Avalonia.PropertyStore
                 }
             }
 
+            var iframe = _inheritanceFrame;
+
+            if (iframe?.Owner == this)
+                iframe = iframe.Parent;
+
+            while (iframe is object)
+            {
+                var values = iframe.Values;
+
+                for (var j = 0; j < values.Count; ++j)
+                {
+                    var value = values[j];
+
+                    if (!newValues.ContainsKey(value.Property.Id) && value.HasValue)
+                    {
+                        newValues.Add(value.Property.Id, new(value));
+                        priorities.Add(value.Property.Id, BindingPriority.Inherited);
+                    }
+                }
+
+                iframe = iframe.Parent;
+            }
+
             var oldValues = _effectiveValues;
             var registry = AvaloniaPropertyRegistry.Instance;
             _effectiveValues = newValues;
@@ -280,7 +368,7 @@ namespace Avalonia.PropertyStore
                     if (oldValues is object && oldValues.TryGetValue(id, out var oldValueEntry))
                         oldValue = oldValueEntry.GetValue();
 
-                    RaisePropertyChanged(property, oldValue, newValue, priorities[id]);
+                    RaisePropertyChanged(property, newValueEntry.Entry, oldValue, newValue, priorities[id]);
                 }
                 else
                 {
@@ -302,7 +390,7 @@ namespace Avalonia.PropertyStore
                     {
                         var newValue = AvaloniaProperty.UnsetValue;
                         var oldValue = oldValueEntry.GetValue();
-                        RaisePropertyChanged(property, oldValue, newValue, BindingPriority.Unset);
+                        RaisePropertyChanged(property, null, oldValue, newValue, BindingPriority.Unset);
                     }
                     else
                     {
@@ -330,6 +418,59 @@ namespace Avalonia.PropertyStore
             return result;
         }
 
+        private void SetInheritanceFrame(InheritanceFrame? frame)
+        {
+            _inheritanceFrame = frame;
+
+            var childCount = Owner.GetInheritanceChildCount();
+
+            for (var i = 0; i < childCount; ++i)
+            {
+                var child = Owner.GetInheritanceChild(i);
+                child.GetValueStore().ParentInheritanceFrameChanged(frame);
+            }
+        }
+
+        private void SetInheritanceFrameValue(IValue entry)
+        {
+            var frame = _inheritanceFrame!;
+
+            if (frame.Owner != this)
+                frame = new InheritanceFrame(this, _inheritanceFrame);
+
+            frame.SetValue(entry);
+            SetInheritanceFrame(frame);
+        }
+
+        private void ParentInheritanceFrameChanged(InheritanceFrame? frame)
+        {
+            if (_inheritanceFrame?.Owner == this)
+                _inheritanceFrame.SetParent(frame);
+            else
+                SetInheritanceFrame(frame);
+        }
+
+        private void InheritedValueChanged<T>(StyledPropertyBase<T> property)
+        {
+            // If the inherited value is set locally, propagation stops here.
+            if (_inheritanceFrame!.Owner == this && _inheritanceFrame.TryGet(property, out _))
+                return;
+
+            ReevaluateEffectiveValue(property);
+            NotifyChildrenInheritedValueChanged(property);
+        }
+
+        private void NotifyChildrenInheritedValueChanged<T>(StyledPropertyBase<T> property)
+        {
+            var childCount = Owner.GetInheritanceChildCount();
+
+            for (var i = 0; i < childCount; ++i)
+            {
+                var child = Owner.GetInheritanceChild(i);
+                child.GetValueStore().InheritedValueChanged(property);
+            }
+        }
+
         private object? GetDefaultValue(AvaloniaProperty property)
         {
             return ((IStyledPropertyAccessor)property).GetDefaultValue(Owner.GetType());
@@ -337,10 +478,13 @@ namespace Avalonia.PropertyStore
 
         private void RaisePropertyChanged(
             AvaloniaProperty property,
+            IValue? entry,
             object? oldValue,
             object? newValue,
             BindingPriority priority)
         {
+            // TODO: Set inheritance frame value.
+
             if (oldValue == AvaloniaProperty.UnsetValue)
                 oldValue = GetDefaultValue(property);
             if (newValue == AvaloniaProperty.UnsetValue)
@@ -354,19 +498,31 @@ namespace Avalonia.PropertyStore
 
         private void RaisePropertyChanged<T>(
             StyledPropertyBase<T> property,
+            IValue? entry,
             Optional<T> oldValue,
             Optional<T> newValue,
             BindingPriority priority)
         {
+            var raiseInherited = false;
+
+            if (priority < BindingPriority.Inherited &&
+                entry is object &&
+                _inheritanceFrame is object &&
+                property.Inherits)
+            {
+                SetInheritanceFrameValue(entry);
+                raiseInherited = true;
+            }
+
             if (!oldValue.HasValue)
                 oldValue = property.GetDefaultValue(Owner.GetType());
             if (!newValue.HasValue)
                 newValue = property.GetDefaultValue(Owner.GetType());
 
             if (oldValue != newValue)
-            {
                 Owner.RaisePropertyChanged(property, oldValue, newValue, priority);
-            }
+            if (raiseInherited)
+                NotifyChildrenInheritedValueChanged(property);
         }
 
         private readonly struct EffectiveValue

@@ -21,15 +21,8 @@ namespace Avalonia.PropertyStore
             return _values.TryGetValue(property.Id, out value);
         }
 
-        public bool TryGetValue<T>(AvaloniaProperty property, out T? value)
-        {
-            if (_values.TryGetValue(property.Id, out var v) && ((IValue<T>)v).TryGetValue(out value))
-                return true;
-            value = default;
-            return false;
-        }
-
         protected void Add(IValue value) => _values.Add(value.Property.Id, value);
         protected bool Remove(AvaloniaProperty property) => _values.Remove(property.Id);
+        protected void Set(IValue value) => _values[value.Property.Id] = value;
     }
 }

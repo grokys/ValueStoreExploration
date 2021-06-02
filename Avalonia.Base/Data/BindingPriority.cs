@@ -1,7 +1,7 @@
 namespace Avalonia.Data
 {
     /// <summary>
-    /// The priority of a binding.
+    /// The priority of a value or binding on an <see cref="AvaloniaObject"/>.
     /// </summary>
     public enum BindingPriority
     {
@@ -11,7 +11,7 @@ namespace Avalonia.Data
         Animation = -1,
 
         /// <summary>
-        /// A local value.
+        /// A local value or binding.
         /// </summary>
         LocalValue = 0,
 
@@ -35,6 +35,11 @@ namespace Avalonia.Data
         /// A style binding.
         /// </summary>
         Style,
+
+        /// <summary>
+        /// The value is inherited from an ancestor element.
+        /// </summary>
+        Inherited,
 
         /// <summary>
         /// The binding is uninitialized.
