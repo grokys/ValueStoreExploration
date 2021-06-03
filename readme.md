@@ -45,6 +45,10 @@ A probably incomplete todo:
 |---------------------------------- |---------:|--------:|--------:|-------:|------:|------:|----------:|
 | Toggle_Style_Activation_Via_Class | 106.6 us | 0.37 us | 0.33 us | 8.7891 |     - |     - |     36 KB |
 
+|                            Method |     Mean |    Error |   StdDev |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+|---------------------------------- |---------:|---------:|---------:|-------:|------:|------:|----------:|
+| Toggle_NonActive_Style_Activation | 96.10 us | 0.602 us | 0.534 us | 8.7891 |     - |     - |     36 KB |
+
 |                            Method |     Mean |   Error |  StdDev |    Gen 0 | Gen 1 | Gen 2 | Allocated |
 |---------------------------------- |---------:|--------:|--------:|---------:|------:|------:|----------:|
 | Setup_Dispose_LocalValue_Bindings | 454.8 us | 2.17 us | 2.03 us | 107.9102 |     - |     - |    441 KB |
@@ -102,6 +106,10 @@ At 01c6e1f049d428f48dbdfbc83b82976285d5ca5f
 |                            Method |     Mean |    Error |   StdDev |  Gen 0 | Gen 1 | Gen 2 | Allocated |
 |---------------------------------- |---------:|---------:|---------:|-------:|------:|------:|----------:|
 | Toggle_Style_Activation_Via_Class | 70.38 us | 0.155 us | 0.137 us | 4.8828 |     - |     - |     20 KB |
+
+|                            Method |     Mean |   Error |  StdDev |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+|---------------------------------- |---------:|--------:|--------:|--------:|------:|------:|----------:|
+| Toggle_NonActive_Style_Activation | 312.3 us | 1.57 us | 1.47 us | 32.2266 |     - |     - |    133 KB |
 
 |              Method | MatchingStyles | NonMatchingStyles |       Mean |     Error |    StdDev |  Gen 0 | Gen 1 | Gen 2 | Allocated |
 |-------------------- |--------------- |------------------ |-----------:|----------:|----------:|-------:|------:|------:|----------:|
