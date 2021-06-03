@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Data;
 
@@ -138,6 +139,36 @@ namespace Avalonia.PropertyStore
             }
 
             return false;
+        }
+
+        public Optional<T> GetBaseValue<T>(
+            StyledPropertyBase<T> property,
+            BindingPriority minPriority,
+            BindingPriority maxPriority)
+        {
+            for (var i = _frames.Count - 1; i >= 0; --i)
+            {
+                var frame = _frames[i];
+
+                if (frame.Priority < maxPriority || frame.Priority > minPriority)
+                    continue;
+
+                var values = frame.Values;
+
+                for (var j = 0; j < values.Count; ++j)
+                {
+                    var value = values[j];
+
+                    if (value.Property == property &&
+                        value is IValue<T> typed &&
+                        typed.TryGetValue(out var result))
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return default;
         }
 
         public void InheritanceParentChanged(ValueStore? newParent)

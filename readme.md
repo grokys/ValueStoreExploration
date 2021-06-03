@@ -10,7 +10,7 @@ A probably incomplete todo:
 - [x] Property value inhertance
 - [x] Validation
 - [ ] Coercion
-- [ ] GetBaseValue
+- [x] GetBaseValue - renamed to `GetValueByPriority` (https://github.com/AvaloniaUI/Avalonia/pull/3853#discussion_r426188762)
 - [x] GetObservable
 - [ ] OnPropertyChangedCore
 

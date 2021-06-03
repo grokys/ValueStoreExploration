@@ -40,6 +40,24 @@ namespace Avalonia
         T? GetValue<T>(StyledPropertyBase<T> property);
 
         /// <summary>
+        /// Gets an <see cref="AvaloniaProperty"/> value with the specified binding priority.
+        /// </summary>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="minPriority">The minimum priority for the value.</param>
+        /// <param name="maxPriority">The maximum priority for the value.</param>
+        /// <remarks>
+        /// Gets the value of the property, if set on this object with a priority between
+        /// <paramref name="minPriority"/> and <paramref name="maxPriority"/> (inclusive),
+        /// otherwise <see cref="Optional{T}.Empty"/>. Note that this method does not return
+        /// property values that come from inherited or default values.
+        /// </remarks>
+        Optional<T> GetValueByPriority<T>(
+            StyledPropertyBase<T> property,
+            BindingPriority minPriority,
+            BindingPriority maxPriority);
+
+        /// <summary>
         /// Checks whether a <see cref="AvaloniaProperty"/> is animating.
         /// </summary>
         /// <param name="property">The property.</param>

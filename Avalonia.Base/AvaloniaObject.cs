@@ -85,6 +85,17 @@ namespace Avalonia
             return _values.GetValue(property);
         }
 
+        public Optional<T> GetValueByPriority<T>(
+            StyledPropertyBase<T> property,
+            BindingPriority minPriority,
+            BindingPriority maxPriority)
+        {
+            _ = property ?? throw new ArgumentNullException(nameof(property));
+            VerifyAccess();
+
+            return _values.GetBaseValue(property, minPriority, maxPriority);
+        }
+
         public bool IsAnimating(AvaloniaProperty property)
         {
             _ = property ?? throw new ArgumentNullException(nameof(property));
