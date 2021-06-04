@@ -13,16 +13,17 @@ namespace Avalonia
             AvaloniaProperty<T> property,
             Optional<T> oldValue,
             BindingValue<T> newValue,
-            BindingPriority priority)
+            BindingPriority priority,
+            bool isEffectiveValueChange)
         {
             if (_pool.Count == 0)
             {
-                return new(sender, property, oldValue, newValue, priority);
+                return new(sender, property, oldValue, newValue, priority, isEffectiveValueChange);
             }
             else
             {
                 var e = _pool.Pop();
-                e.Initialize(sender, property, oldValue, newValue, priority);
+                e.Initialize(sender, property, oldValue, newValue, priority, isEffectiveValueChange);
                 return e;
             }
         }

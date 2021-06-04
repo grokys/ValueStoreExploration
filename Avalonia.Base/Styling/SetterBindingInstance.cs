@@ -63,7 +63,7 @@ namespace Avalonia.Styling
 #if BOXING
             _owner.ValueStore?.ValueChanged(_owner, Property);
 #else
-            _owner.ValueStore?.ValueChanged(_owner, Property, oldValue);
+            _owner.ValueStore?.ValueChanged(_owner, this, oldValue);
 #endif
         }
 

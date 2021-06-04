@@ -177,11 +177,12 @@ namespace Avalonia
             AvaloniaObject owner,
             object oldValue,
             object newValue,
-            BindingPriority priority)
+            BindingPriority priority,
+            bool isEffectiveValueChange)
         {
             var o = oldValue != UnsetValue ? new Optional<TValue>((TValue)oldValue) : default;
             var n = newValue != UnsetValue ? new BindingValue<TValue>((TValue)newValue) : default;
-            owner.RaisePropertyChanged(this, o, n, priority);
+            owner.RaisePropertyChanged(this, o, n, priority, isEffectiveValueChange);
         }
 
         private object GetDefaultBoxedValue(Type type)

@@ -48,7 +48,7 @@ namespace Avalonia.PropertyStore
                 var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _hasValue = false;
                 _value = default;
-                _owner.ValueStore.ValueChanged(_owner, Property, oldValue);
+                _owner.ValueStore.ValueChanged(_owner, this, oldValue);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Avalonia.PropertyStore
                 var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _value = value;
                 _hasValue = true;
-                _owner.ValueStore.ValueChanged(_owner, Property, oldValue);
+                _owner.ValueStore.ValueChanged<T>(_owner, this, oldValue);
             }
         }
 

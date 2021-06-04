@@ -12,7 +12,8 @@ A probably incomplete todo:
 - [ ] Coercion
 - [x] GetBaseValue - renamed to `GetValueByPriority` (https://github.com/AvaloniaUI/Avalonia/pull/3853#discussion_r426188762)
 - [x] GetObservable
-- [ ] OnPropertyChangedCore
+- [x] OnPropertyChangedCore
+  - Non-effective value changes are now only raised when effective value is animation
 
 # Benchmarks
 

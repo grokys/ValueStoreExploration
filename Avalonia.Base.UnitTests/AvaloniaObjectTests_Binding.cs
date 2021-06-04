@@ -26,18 +26,21 @@ namespace Avalonia.Base.UnitTests
         {
             var target = new Class1();
             var source = new Subject<BindingValue<string>>();
-            bool raised = false;
+            var raised = 0;
 
             target.PropertyChanged += (s, e) =>
-                raised = e.Property == Class1.FooProperty &&
-                         (string?)e.OldValue == "foodefault" &&
-                         (string?)e.NewValue == "newvalue" &&
-                         e.Priority == BindingPriority.LocalValue;
+            {
+                Assert.Equal(Class1.FooProperty, e.Property);
+                Assert.Equal("foodefault", (string?)e.OldValue);
+                Assert.Equal("newvalue", (string?)e.NewValue);
+                Assert.Equal(BindingPriority.LocalValue, e.Priority);
+                ++raised;
+            };
 
             target.Bind(Class1.FooProperty, source);
             source.OnNext("newvalue");
 
-            Assert.True(raised);
+            Assert.Equal(1, raised);
         }
 
         [Fact]

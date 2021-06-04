@@ -119,7 +119,7 @@ namespace Avalonia.PropertyStore
             {
                 _hasValue = false;
                 _value = default;
-                _owner.ValueChanged(this, Property, oldValue);
+                _owner.ValueChanged(this, this, oldValue);
             }
         }
 
@@ -137,7 +137,12 @@ namespace Avalonia.PropertyStore
                 var oldValue = _hasValue ? new Optional<T>(_value) : default;
                 _value = value;
                 _hasValue = true;
-                _owner.ValueChanged(this, Property, oldValue);
+
+                // Only raise a property changed notifcation if we're not currently in the process of
+                // starting the binding (in this case the value will be read immediately afterwards
+                // and a notification raised).
+                if (_bindingSubscription != Disposable.Empty)
+                    _owner.ValueChanged(this, this, oldValue);
             }
         }
 

@@ -23,11 +23,23 @@ namespace Avalonia
             Optional<T> oldValue,
             BindingValue<T> newValue,
             BindingPriority priority)
+            : this(sender, property, oldValue, newValue, priority, true)
+        {
+        }
+
+        internal AvaloniaPropertyChangedEventArgs(
+            IAvaloniaObject sender,
+            AvaloniaProperty<T> property,
+            Optional<T> oldValue,
+            BindingValue<T> newValue,
+            BindingPriority priority,
+            bool isEffectiveValueChange)
             : base(sender, priority)
         {
             Property = property;
             OldValue = oldValue;
             NewValue = newValue;
+            IsEffectiveValueChange = isEffectiveValueChange;
         }
 
         /// <summary>
@@ -41,24 +53,14 @@ namespace Avalonia
         /// <summary>
         /// Gets the old value of the property.
         /// </summary>
-        /// <remarks>
-        /// When <see cref="AvaloniaPropertyChangedEventArgs.IsEffectiveValueChange"/> is true, returns the
-        /// old value of the property on the object. 
-        /// When <see cref="AvaloniaPropertyChangedEventArgs.IsEffectiveValueChange"/> is false, returns
-        /// <see cref="Optional{T}.Empty"/>.
-        /// </remarks>
         public new Optional<T> OldValue { get; private set; }
 
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        /// <remarks>
-        /// When <see cref="AvaloniaPropertyChangedEventArgs.IsEffectiveValueChange"/> is true, returns the
-        /// value of the property on the object.
-        /// When <see cref="AvaloniaPropertyChangedEventArgs.IsEffectiveValueChange"/> is false returns the
-        /// changed value, or <see cref="Optional{T}.Empty"/> if the value was removed.
-        /// </remarks>
         public new BindingValue<T> NewValue { get; private set; }
+
+        internal bool IsEffectiveValueChange { get; private set; }
 
         protected override AvaloniaProperty GetProperty() => Property;
 
@@ -71,14 +73,15 @@ namespace Avalonia
             AvaloniaProperty<T> property,
             Optional<T> oldValue,
             BindingValue<T> newValue,
-            BindingPriority priority)
+            BindingPriority priority,
+            bool isEffectiveValueChange)
         {
             Sender = sender;
             Property = property;
             OldValue = oldValue;
             NewValue = newValue;
             Priority = priority;
-            IsEffectiveValueChange = true;
+            IsEffectiveValueChange = isEffectiveValueChange;
         }
 
         internal void Recycle()

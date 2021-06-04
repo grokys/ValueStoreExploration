@@ -8,6 +8,11 @@ namespace Avalonia.PropertyStore
     internal interface IValue<T> : IValue
     {
         /// <summary>
+        /// Gets the property that this value applies to.
+        /// </summary>
+        new StyledPropertyBase<T> Property { get; }
+
+        /// <summary>
         /// Tries to get the value associated with the entry.
         /// </summary>
         /// <param name="value">

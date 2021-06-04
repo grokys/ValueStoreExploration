@@ -350,7 +350,8 @@ namespace Avalonia
             AvaloniaObject owner,
             object? oldValue,
             object? newValue,
-            BindingPriority priority);
+            BindingPriority priority,
+            bool isEffectiveValueChange);
 
         private AvaloniaPropertyMetadata GetMetadataWithOverrides(Type type)
         {

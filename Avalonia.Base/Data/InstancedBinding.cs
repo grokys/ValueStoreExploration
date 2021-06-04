@@ -13,7 +13,7 @@ namespace Avalonia.Data
     /// </remarks>
     public class InstancedBinding
     {
-        public InstancedBinding(IObservable<object> source, BindingMode mode, BindingPriority priority)
+        public InstancedBinding(IObservable<object?> source, BindingMode mode, BindingPriority priority)
         {
             Mode = mode;
             Priority = priority;
@@ -33,6 +33,6 @@ namespace Avalonia.Data
         /// <summary>
         /// Gets the <see cref="Value"/> as an observable.
         /// </summary>
-        public IObservable<object> Observable { get; }
+        public IObservable<object?> Observable { get; }
     }
 }

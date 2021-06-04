@@ -122,9 +122,15 @@ namespace Avalonia
 
         public void VerifyAccess() => Dispatcher.UIThread.VerifyAccess();
 
-        protected void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> e)
+        protected virtual void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> e)
         {
             PropertyChanged?.Invoke(this, e);
+        }
+
+        private protected virtual void OnPropertyChangedCore<T>(AvaloniaPropertyChangedEventArgs<T> change)
+        {
+            if (change.IsEffectiveValueChange)
+                OnPropertyChanged(change);
         }
 
         private protected void ApplyStyle(IValueFrame frame) => _values.ApplyStyle(frame);
@@ -146,17 +152,22 @@ namespace Avalonia
             AvaloniaProperty<T> property,
             Optional<T> oldValue,
             BindingValue<T> newValue,
-            BindingPriority priority = BindingPriority.LocalValue)
+            BindingPriority priority,
+            bool isEffectiveValue)
         {
             var e = AvaloniaPropertyChangedEventArgsPool<T>.Get(
                 this,
                 property,
                 oldValue,
                 newValue,
-                priority);
-            OnPropertyChanged(e);
+                priority,
+                isEffectiveValue);
 
-            if (_observables is object && _observables.TryGetValue(property, out var o))
+            OnPropertyChangedCore(e);
+
+            if (e.IsEffectiveValueChange &&
+                _observables is object &&
+                _observables.TryGetValue(property, out var o))
             {
                 var value = e.NewValue.Value;
 
