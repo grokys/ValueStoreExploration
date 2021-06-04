@@ -4,7 +4,7 @@ using Avalonia.Data;
 
 namespace Avalonia.PropertyStore
 {
-    internal class LocalValueEntry<T> : IValue<T>,
+    internal class LocalValueEntry<T> : IValueEntry<T>,
         IObserver<BindingValue<T>>,
         IObserver<T?>,
         IDisposable
@@ -22,7 +22,7 @@ namespace Avalonia.PropertyStore
 
         public bool HasValue => _hasValue;
         public StyledPropertyBase<T> Property { get; }
-        AvaloniaProperty IValue.Property => Property;
+        AvaloniaProperty IValueEntry.Property => Property;
 
         public IDisposable AddBinding(IObservable<BindingValue<T>> source)
         {

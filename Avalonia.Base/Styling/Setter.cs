@@ -4,7 +4,7 @@ using Avalonia.PropertyStore;
 
 namespace Avalonia.Styling
 {
-    public class Setter : IValueStoreSetter, IValue
+    public class Setter : IValueStoreSetter, IValueEntry
     {
         public Setter()
         {
@@ -19,9 +19,9 @@ namespace Avalonia.Styling
         public bool HasValue => true;
         public AvaloniaProperty? Property { get; set; }
         public object? Value { get; set; }
-        AvaloniaProperty IValue.Property => EnsureProperty();
+        AvaloniaProperty IValueEntry.Property => EnsureProperty();
 
-        IValue IValueStoreSetter.Instance(StyleInstance instance, IStyleable target)
+        IValueEntry IValueStoreSetter.Instance(StyleInstance instance, IStyleable target)
         {
             _ = Property ?? throw new InvalidOperationException("Setter.Property must be set.");
 
@@ -37,7 +37,7 @@ namespace Avalonia.Styling
             }
         }
 
-        bool IValue.TryGetValue(out object? value)
+        bool IValueEntry.TryGetValue(out object? value)
         {
             value = Value;
             return true;

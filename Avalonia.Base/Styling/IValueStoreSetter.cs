@@ -4,6 +4,6 @@ namespace Avalonia.Styling
 {
     internal interface IValueStoreSetter : ISetter
     {
-        IValue Instance(StyleInstance instance, IStyleable target);
+        IValueEntry Instance(StyleInstance instance, IStyleable target);
     }
 }

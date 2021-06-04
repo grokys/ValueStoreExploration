@@ -61,6 +61,6 @@ namespace Avalonia.PropertyStore
             e.SetValue(value);
         }
 
-        public void Remove(IValue value) => base.Remove(value.Property);
+        public void Remove(IValueEntry value) => base.Remove(value.Property);
     }
 }

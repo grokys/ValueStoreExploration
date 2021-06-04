@@ -6,11 +6,11 @@ using Avalonia.Utilities;
 
 namespace Avalonia.PropertyStore
 {
-    internal class BindingEntry<T> : IValue<T>,
+    internal class BindingEntry<T> : IValueEntry<T>,
         IValueFrame, 
         IObserver<BindingValue<T>>,
         IObserver<T?>,
-        IList<IValue>,
+        IList<IValueEntry>,
         IDisposable
     {
         private readonly object _source;
@@ -51,12 +51,12 @@ namespace Avalonia.PropertyStore
         public bool IsActive => true;
         public BindingPriority Priority { get; }
         public StyledPropertyBase<T> Property { get; }
-        AvaloniaProperty IValue.Property => Property;
-        public IList<IValue> Values => this;
-        int ICollection<IValue>.Count => 1;
-        bool ICollection<IValue>.IsReadOnly => true;
+        AvaloniaProperty IValueEntry.Property => Property;
+        public IList<IValueEntry> Values => this;
+        int ICollection<IValueEntry>.Count => 1;
+        bool ICollection<IValueEntry>.IsReadOnly => true;
         
-        IValue IList<IValue>.this[int index] 
+        IValueEntry IList<IValueEntry>.this[int index] 
         { 
             get => this;
             set => throw new NotImplementedException(); 
@@ -88,15 +88,15 @@ namespace Avalonia.PropertyStore
         public void OnError(Exception error) => BindingCompleted();
         void IObserver<T?>.OnNext(T? value) => SetValue(value);
 
-        int IList<IValue>.IndexOf(IValue item) => throw new NotImplementedException();
-        void IList<IValue>.Insert(int index, IValue item) => throw new NotImplementedException();
-        void IList<IValue>.RemoveAt(int index) => throw new NotImplementedException();
-        void ICollection<IValue>.Add(IValue item) => throw new NotImplementedException();
-        void ICollection<IValue>.Clear() => throw new NotImplementedException();
-        bool ICollection<IValue>.Contains(IValue item) => throw new NotImplementedException();
-        void ICollection<IValue>.CopyTo(IValue[] array, int arrayIndex) => throw new NotImplementedException();
-        bool ICollection<IValue>.Remove(IValue item) => throw new NotImplementedException();
-        IEnumerator<IValue> IEnumerable<IValue>.GetEnumerator() => throw new NotImplementedException();
+        int IList<IValueEntry>.IndexOf(IValueEntry item) => throw new NotImplementedException();
+        void IList<IValueEntry>.Insert(int index, IValueEntry item) => throw new NotImplementedException();
+        void IList<IValueEntry>.RemoveAt(int index) => throw new NotImplementedException();
+        void ICollection<IValueEntry>.Add(IValueEntry item) => throw new NotImplementedException();
+        void ICollection<IValueEntry>.Clear() => throw new NotImplementedException();
+        bool ICollection<IValueEntry>.Contains(IValueEntry item) => throw new NotImplementedException();
+        void ICollection<IValueEntry>.CopyTo(IValueEntry[] array, int arrayIndex) => throw new NotImplementedException();
+        bool ICollection<IValueEntry>.Remove(IValueEntry item) => throw new NotImplementedException();
+        IEnumerator<IValueEntry> IEnumerable<IValueEntry>.GetEnumerator() => throw new NotImplementedException();
         IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
 
         void IObserver<BindingValue<T>>.OnNext(BindingValue<T> value)

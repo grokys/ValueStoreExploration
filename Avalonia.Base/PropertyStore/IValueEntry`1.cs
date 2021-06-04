@@ -5,7 +5,7 @@ namespace Avalonia.PropertyStore
     /// <summary>
     /// Represents a typed value entry in an <see cref="IValueFrame"/>.
     /// </summary>
-    internal interface IValue<T> : IValue
+    internal interface IValueEntry<T> : IValueEntry
     {
         /// <summary>
         /// Gets the property that this value applies to.

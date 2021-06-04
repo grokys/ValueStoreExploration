@@ -16,7 +16,7 @@ namespace Avalonia.PropertyStore
         public InheritanceFrame? Parent { get; private set; }
         public override BindingPriority Priority => BindingPriority.Inherited;
 
-        public bool TryGetFromThisOrAncestor(AvaloniaProperty property, [NotNullWhen(true)] out IValue? value)
+        public bool TryGetFromThisOrAncestor(AvaloniaProperty property, [NotNullWhen(true)] out IValueEntry? value)
         {
             var frame = this;
 
@@ -32,6 +32,6 @@ namespace Avalonia.PropertyStore
         }
 
         public void SetParent(InheritanceFrame? value) => Parent = value;
-        public void SetValue(IValue value) => Set(value);
+        public void SetValue(IValueEntry value) => Set(value);
     }
 }

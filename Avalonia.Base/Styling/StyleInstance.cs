@@ -36,7 +36,7 @@ namespace Avalonia.Styling
 
         public override BindingPriority Priority { get; }
 
-        public new void Add(IValue value) => base.Add(value);
+        public new void Add(IValueEntry value) => base.Add(value);
         public override void SetOwner(ValueStore? owner) => ValueStore = owner;
 
         void IStyleActivatorSink.OnNext(bool value, int tag)

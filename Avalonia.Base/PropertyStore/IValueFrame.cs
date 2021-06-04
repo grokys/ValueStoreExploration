@@ -27,10 +27,14 @@ namespace Avalonia.PropertyStore
         BindingPriority Priority { get; }
 
         /// <summary>
-        /// Gets the frames values.
+        /// Gets the frame's value entries.
         /// </summary>
-        IList<IValue> Values { get; }
+        IList<IValueEntry> Values { get; }
 
+        /// <summary>
+        /// Sets the owner of the value frame.
+        /// </summary>
+        /// <param name="owner">The new owner.</param>
         void SetOwner(ValueStore? owner);
     }
 }

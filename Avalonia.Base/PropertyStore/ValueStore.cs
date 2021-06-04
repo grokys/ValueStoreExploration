@@ -182,7 +182,7 @@ namespace Avalonia.PropertyStore
                     var value = values[j];
 
                     if (value.Property == property &&
-                        value is IValue<T> typed &&
+                        value is IValueEntry<T> typed &&
                         typed.TryGetValue(out var result))
                     {
                         return result;
@@ -209,14 +209,14 @@ namespace Avalonia.PropertyStore
         }
 
         /// <summary>
-        /// Called by an <see cref="IValue"/> to notify the value store that its value has changed.
+        /// Called by an <see cref="IValueEntry"/> to notify the value store that its value has changed.
         /// </summary>
         /// <param name="frame">The frame that the value belongs to.</param>
         /// <param name="value">The value entry.</param>
         /// <param name="oldValue">The old value of the value entry.</param>
         public void ValueChanged(
             IValueFrame frame,
-            IValue value,
+            IValueEntry value,
             object? oldValue)
         {
             var property = value.Property;
@@ -245,7 +245,7 @@ namespace Avalonia.PropertyStore
         }
 
         /// <summary>
-        /// Called by an <see cref="IValue{T}"/> to notify the value store that its value has changed.
+        /// Called by an <see cref="IValueEntry{T}"/> to notify the value store that its value has changed.
         /// </summary>
         /// <typeparam name="T">The property type.</typeparam>
         /// <param name="frame">The frame that the value belongs to.</param>
@@ -253,7 +253,7 @@ namespace Avalonia.PropertyStore
         /// <param name="oldValue">The old value of the value entry.</param>
         public void ValueChanged<T>(
             IValueFrame frame,
-            IValue<T> value,
+            IValueEntry<T> value,
             Optional<T> oldValue)
         {
             var property = value.Property;
@@ -346,7 +346,7 @@ namespace Avalonia.PropertyStore
             RaisePropertyChanged(property, value, oldValue, newValue, priority, true);
         }
 
-        private void ReevaluateNonAnimatedValue(AvaloniaProperty property, IValue changed)
+        private void ReevaluateNonAnimatedValue(AvaloniaProperty property, IValueEntry changed)
         {
             if (EvaluateEffectiveValue(property, out var effective, out var priority, BindingPriority.LocalValue))
             {
@@ -366,7 +366,7 @@ namespace Avalonia.PropertyStore
             }
         }
 
-        private void ReevaluateNonAnimatedValue<T>(StyledPropertyBase<T> property, IValue changed)
+        private void ReevaluateNonAnimatedValue<T>(StyledPropertyBase<T> property, IValueEntry changed)
         {
             if (EvaluateEffectiveValue(property, out var effective, out var priority, BindingPriority.LocalValue))
             {
@@ -374,7 +374,7 @@ namespace Avalonia.PropertyStore
                 {
                     _nonAnimatedValues ??= new Dictionary<int, EffectiveValue>();
                     _nonAnimatedValues.Add(property.Id, new(effective, priority));
-                    ((IValue<T>)effective).TryGetValue(out var newValue);
+                    ((IValueEntry<T>)effective).TryGetValue(out var newValue);
                     RaisePropertyChanged<T>(property, changed, default, newValue, priority, false);
                 }
             }
@@ -388,7 +388,7 @@ namespace Avalonia.PropertyStore
 
         private bool EvaluateEffectiveValue(
             AvaloniaProperty property,
-            [NotNullWhen(true)] out IValue? result,
+            [NotNullWhen(true)] out IValueEntry? result,
             out BindingPriority priority,
             BindingPriority maxPriority = BindingPriority.Animation)
         {
@@ -613,7 +613,7 @@ namespace Avalonia.PropertyStore
             return new EffectiveValue(null!, BindingPriority.Unset);
         }
 
-        private object? SetEffectiveValue(AvaloniaProperty property, IValue value, BindingPriority priority)
+        private object? SetEffectiveValue(AvaloniaProperty property, IValueEntry value, BindingPriority priority)
         {
             _effectiveValues ??= new();
             _effectiveValues[property.Id] = new(value, priority);
@@ -625,7 +625,7 @@ namespace Avalonia.PropertyStore
             return result;
         }
 
-        private T? SetEffectiveValue<T>(StyledPropertyBase<T> property, IValue value, BindingPriority priority)
+        private T? SetEffectiveValue<T>(StyledPropertyBase<T> property, IValueEntry value, BindingPriority priority)
         {
             _effectiveValues ??= new();
             _effectiveValues[property.Id] = new(value, priority);
@@ -633,7 +633,7 @@ namespace Avalonia.PropertyStore
             if (priority > BindingPriority.Animation)
                 _nonAnimatedValues?.Remove(property.Id);
 
-            ((IValue<T>)value).TryGetValue(out var result);
+            ((IValueEntry<T>)value).TryGetValue(out var result);
             return result;
         }
 
@@ -656,7 +656,7 @@ namespace Avalonia.PropertyStore
             }
         }
 
-        private void SetInheritanceFrameValue(IValue entry)
+        private void SetInheritanceFrameValue(IValueEntry entry)
         {
             var frame = _inheritanceFrame!;
 
@@ -724,7 +724,7 @@ namespace Avalonia.PropertyStore
 
         private void RaisePropertyChanged(
             AvaloniaProperty property,
-            IValue? entry,
+            IValueEntry? entry,
             object? oldValue,
             object? newValue,
             BindingPriority priority,
@@ -754,7 +754,7 @@ namespace Avalonia.PropertyStore
 
         private void RaisePropertyChanged<T>(
             StyledPropertyBase<T> property,
-            IValue? entry,
+            IValueEntry? entry,
             Optional<T> oldValue,
             Optional<T> newValue,
             BindingPriority priority,
@@ -787,13 +787,13 @@ namespace Avalonia.PropertyStore
 
         private readonly struct EffectiveValue
         {
-            public EffectiveValue(IValue? value, BindingPriority priority)
+            public EffectiveValue(IValueEntry? value, BindingPriority priority)
             {
                 Entry = value;
                 Priority = priority;
             }
 
-            public readonly IValue? Entry;
+            public readonly IValueEntry? Entry;
             public readonly BindingPriority Priority;
 
             public object? GetValue()
@@ -804,7 +804,7 @@ namespace Avalonia.PropertyStore
 
             public T? GetValue<T>()
             {
-                if (Entry is IValue<T> typed)
+                if (Entry is IValueEntry<T> typed)
                 {
                     typed.TryGetValue(out var result);
                     return result;

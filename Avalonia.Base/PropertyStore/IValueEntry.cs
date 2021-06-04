@@ -5,7 +5,7 @@ namespace Avalonia.PropertyStore
     /// <summary>
     /// Represents an untyped value entry in an <see cref="IValueFrame"/>.
     /// </summary>
-    internal interface IValue
+    internal interface IValueEntry
     {
         bool HasValue { get; }
 
